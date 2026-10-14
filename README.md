@@ -1,12 +1,12 @@
 # CHEM 1082 Stereochemistry Models
 
-Three interactive models are available as equal choices from the model library (`index.html`):
+The conformation lab homepage (`index.html`) contains navigation links to three interactive models. Each model opens on its own page:
 
-- **Newman projection lab** (`newman.html`): CHClBr–CHClBr and matching fill-in-the-blank Newman projections.
+- **CHClBr–CHClBr** (`newman.html`): the molecular model and matching fill-in-the-blank Newman projections.
 - **1,2-dibromoethane** (`dibromoethane.html`): 3D viewing and Newman projections from either viewing direction.
 - **2-bromobutane** (`bromobutane.html`): free 3D rotation, comparison with the start, C2–C3 rotation, and Br/H removal and insertion.
 
-Each model links back to the library and to the other models. In the Newman projection lab, the initial arrangement matches the supplied drawing: both H atoms up, both Cl atoms toward the viewer, and both Br atoms behind. Rotating the C–C bond preserves the configuration.
+Each model links back to the conformation lab homepage and to the other models. In the CHClBr–CHClBr model, the initial arrangement matches the supplied drawing: both H atoms up, both Cl atoms toward the viewer, and both Br atoms behind. Rotating the C–C bond preserves the configuration.
 
 ## Publish with GitHub Pages
 
@@ -17,7 +17,7 @@ Each model links back to the library and to the other models. In the Newman proj
 
 This is a static website. It needs no build command, server, API key, or student sign-in once published publicly. Repository visibility and GitHub account plan may affect whether Pages publishing is available.
 
-## Use the Newman projection model
+## Use the CHClBr–CHClBr model
 
 - Drag the molecular model to rotate the whole molecule.
 - Move the C–C rotation slider to explore conformations.
@@ -29,8 +29,8 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 
 ## Included files
 
-- `index.html` — shared model library
-- `newman.html` — Newman projection lab
+- `index.html` — conformation lab navigation
+- `newman.html` — CHClBr–CHClBr model
 - `bromobutane.html` — interactive 2-bromobutane model
 - `dibromoethane.html` — 1,2-dibromoethane Newman projection practice
 - `chclbr-newman-worksheet.pdf` — printable student worksheet

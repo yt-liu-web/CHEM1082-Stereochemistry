@@ -3,24 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Interactive stereochemistry models for CHEM 1082: explore Newman projections, 2-bromobutane, and 1,2-dibromoethane.">
-<title>Stereochemistry models · CHEM 1082</title>
+<meta name="description" content="Choose one of three interactive molecular models for the CHEM 1082 conformation lab.">
+<title>Conformation lab · CHEM 1082</title>
 <style>
-:root{color-scheme:light dark;--bg:light-dark(#fff,#181818);--text:light-dark(#152d3a,#edf3f6);--muted:light-dark(#50616b,#b5c1c8);--line:light-dark(#dce3e7,#424b50);--accent:light-dark(#075c7d,#88d7f4);--panel:light-dark(#f5f8fa,#20272b)}
-*{box-sizing:border-box}body{max-width:980px;margin:0 auto;padding:1rem;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.6}a{color:var(--accent);text-underline-offset:5px}a:focus-visible{outline:2px solid currentColor;outline-offset:5px}.model-nav{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;padding:6px 0 18px;margin:0 0 18px;border-bottom:1px solid var(--line)}.model-nav a{display:inline-flex;align-items:center;min-height:36px;font-size:14px}.model-nav a[aria-current="page"]{color:inherit;text-decoration-thickness:2px;font-weight:600}.intro{padding:28px 0 32px}.course{font-size:13px;letter-spacing:.08em;font-weight:600;color:var(--muted);margin:0 0 10px}h1{font-size:clamp(28px,4.5vw,40px);line-height:1.2;font-weight:600;letter-spacing:-.025em;margin:0 0 14px}.intro>p:last-child{max-width:650px;margin:0;color:var(--muted)}.models{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.model-card{border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:flex-start;min-width:0}.formula{align-self:stretch;min-height:96px;display:flex;align-items:center;justify-content:center;background:var(--panel);border-radius:8px;font-size:17px;white-space:nowrap;margin:0 0 24px}h2{font-size:23px;line-height:1.3;letter-spacing:-.015em;font-weight:600;margin:0 0 12px}.description{color:var(--muted);margin:0 0 24px}.open-model{margin-top:auto;display:inline-flex;min-height:44px;align-items:center;gap:12px;font-weight:600;text-decoration-thickness:1px}.hint{margin:28px 0;color:var(--muted);font-size:14px}@media(max-width:800px){.models{grid-template-columns:1fr;gap:20px}.model-card{padding:24px}.intro{padding:20px 0 26px}.formula{font-size:19px}.model-nav{gap:4px 18px}}
+:root{color-scheme:light dark;--bg:light-dark(#fff,#181818);--text:light-dark(#152d3a,#edf3f6);--muted:light-dark(#50616b,#b5c1c8);--line:light-dark(#dce3e7,#424b50);--accent:light-dark(#075c7d,#88d7f4)}
+*{box-sizing:border-box}body{max-width:980px;margin:0 auto;padding:1rem;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.6}a{color:var(--accent);text-underline-offset:5px}a:focus-visible{outline:2px solid currentColor;outline-offset:5px}.intro{padding:28px 0 18px}.course{font-size:13px;letter-spacing:.08em;font-weight:600;color:var(--muted);margin:0 0 10px}h1{font-size:clamp(28px,4.5vw,40px);line-height:1.2;font-weight:600;letter-spacing:-.025em;margin:0 0 14px}.intro>p:last-child{margin:0;color:var(--muted)}.model-nav{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;padding:6px 0 18px;border-bottom:1px solid var(--line)}.model-nav a{display:inline-flex;align-items:center;min-height:44px;font-size:16px}@media(max-width:600px){.intro{padding-top:20px}.model-nav{align-items:flex-start;flex-direction:column;gap:8px}}
 </style>
 </head>
 <body>
-<nav class="model-nav" aria-label="Stereochemistry models"><a href="./index.html" aria-current="page">Model library</a><a href="./newman.html">Newman projection</a><a href="./bromobutane.html">2-bromobutane</a><a href="./dibromoethane.html">1,2-dibromoethane</a></nav>
 <main>
-<header class="intro"><p class="course">CHEM 1082</p><h1>Stereochemistry models</h1><p>Choose a model to explore molecular shape, bond rotation, and spatial arrangement.</p></header>
-<section class="models" aria-label="Interactive models">
-<article class="model-card"><p class="formula" aria-label="CHClBr bonded to CHClBr">CHClBr–CHClBr</p><h2>Newman projection lab</h2><p class="description">Rotate the C–C bond, view the molecule along the bond, and complete the matching Newman projection. Includes a printable worksheet and answer key.</p><a class="open-model" href="./newman.html" aria-label="Open Newman projection model">Open model <span aria-hidden="true">→</span></a></article>
-<article class="model-card"><p class="formula" aria-label="CH3 bonded to CHBr bonded to CH2 bonded to CH3">CH₃–CH(Br)–CH₂–CH₃</p><h2>2-bromobutane</h2><p class="description">Turn the molecule, compare it with the starting structure, and rotate the C2–C3 bond. Pull off and reinsert Br and H to explore their spatial arrangement.</p><a class="open-model" href="./bromobutane.html" aria-label="Open 2-bromobutane model">Open model <span aria-hidden="true">→</span></a></article>
-<article class="model-card"><p class="formula" aria-label="Bromine bonded to CH2 bonded to CH2 bonded to bromine">Br–CH₂–CH₂–Br</p><h2>1,2-dibromoethane</h2><p class="description">Turn the molecule and choose either viewing direction. Practice drawing the matching Newman projection.</p><a class="open-model" href="./dibromoethane.html" aria-label="Open 1,2-dibromoethane model">Open model <span aria-hidden="true">→</span></a></article>
-</section>
-<p class="hint">All models work with a mouse, touch, or keyboard.</p>
+<header class="intro"><p class="course">CHEM 1082</p><h1>Conformation lab</h1><p>Choose a model:</p></header>
+<nav class="model-nav" aria-label="Interactive molecular models">
+<a href="./newman.html">CHClBr–CHClBr</a>
+<a href="./bromobutane.html">2-bromobutane</a>
+<a href="./dibromoethane.html">1,2-dibromoethane</a>
+</nav>
 </main>
 </body>
 </html>
-
