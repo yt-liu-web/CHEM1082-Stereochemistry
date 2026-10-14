@@ -2,9 +2,9 @@
 
 The conformation lab homepage (`index.html`) contains navigation links to three interactive models. Each model opens on its own page:
 
+- **2-bromobutane** (`bromobutane.html`): free 3D rotation, comparison with the start, C2–C3 rotation, and Br/H removal and insertion.
 - **CHClBr–CHClBr** (`newman.html`): the molecular model and matching fill-in-the-blank Newman projections.
 - **1,2-dibromoethane** (`dibromoethane.html`): 3D viewing and Newman projections from either viewing direction.
-- **2-bromobutane** (`bromobutane.html`): free 3D rotation, comparison with the start, C2–C3 rotation, and Br/H removal and insertion.
 
 The homepage also links to the separate configuration lab (`configuration.html`), which currently has no models.
 
