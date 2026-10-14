@@ -6,11 +6,13 @@ The conformation lab homepage (`index.html`) contains navigation links to three 
 - **1,2-dibromoethane** (`dibromoethane.html`): 3D viewing and Newman projections from either viewing direction.
 - **2-bromobutane** (`bromobutane.html`): free 3D rotation, comparison with the start, C2–C3 rotation, and Br/H removal and insertion.
 
+The homepage also links to the separate configuration lab (`configuration.html`), which currently has no models.
+
 Each model links back to the conformation lab homepage and to the other models. In the CHClBr–CHClBr model, the initial arrangement matches the supplied drawing: both H atoms up, both Cl atoms toward the viewer, and both Br atoms behind. Rotating the C–C bond preserves the configuration.
 
 ## Publish with GitHub Pages
 
-1. Upload all files in this folder to the root of the repository's `main` branch. Keep all four HTML pages and both PDF files together.
+1. Upload all files in this folder to the root of the repository's `main` branch. Keep all five HTML pages and both PDF files together.
 2. In the repository, open **Settings → Pages**.
 3. Under **Build and deployment**, choose **Deploy from a branch**, select **main** and **/ (root)**, then save.
 4. Wait for GitHub to finish deploying. Share the website address shown on the Pages settings screen with students.
@@ -30,6 +32,7 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 ## Included files
 
 - `index.html` — conformation lab navigation
+- `configuration.html` — configuration lab placeholder
 - `newman.html` — CHClBr–CHClBr model
 - `bromobutane.html` — interactive 2-bromobutane model
 - `dibromoethane.html` — 1,2-dibromoethane Newman projection practice
