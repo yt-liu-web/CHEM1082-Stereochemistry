@@ -48,6 +48,8 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 - `chclbr-newman-answer-key.pdf` — printable answer key
 - `.nojekyll` — serves the files directly through GitHub Pages
 
+## Use the chair drawing exercise
 
+Open `chair-practice.html` from the conformation homepage or the cyclohexane explorer. Draw both outgoing bonds at each numbered carbon, select a bond, and assign axial/equatorial and up/down labels. Check either chair or both; the solution overlay leaves student work intact. Keyboard drawing controls provide an alternative to dragging. Drawings are saved only in the current browser.
 
-
+The additional 1-methyl-3-isopropylcyclohexane question includes cis and trans cases because the name alone does not specify their relationship. The most stable cis chair is diequatorial. The most stable trans chair places isopropyl equatorial and methyl axial. See [OpenStax section 4.8](https://openstax.org/books/organic-chemistry/pages/4-8-conformations-of-disubstituted-cyclohexanes).
