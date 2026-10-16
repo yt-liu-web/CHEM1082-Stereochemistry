@@ -59,22 +59,16 @@
   function choose(chair, carbon, bondId = '') {
     state.chair = chair; state.carbon = carbon; state.selected = bondId;
     armed = null; dismissedBond = '';
-    syncAngle();
     render();
-  }
-  function syncAngle() {
-    const b = selectedBond();
-    if (b) $('#bond-angle').value = String((Math.round(Math.atan2(-b.dy, b.dx) * 180 / Math.PI) + 360) % 360);
-    updateDirectionButtons();
   }
   function addBond(chair, carbon, dx, dy) {
     if (Math.hypot(dx, dy) < 14) { announce('Choose an endpoint farther from the carbon.'); return false; }
-    if (state.bonds[chair][carbon].length >= 2) { announce(`Chair ${chair + 1}, C${carbon + 1} already has two bonds. Select a bond to adjust or delete it.`); return false; }
+    if (state.bonds[chair][carbon].length >= 2) { announce(`Chair ${chair + 1}, C${carbon + 1} already has two bonds. Select a bond to label or delete it.`); return false; }
     remember();
     const b = {id: `b${nextId++}`, ...core.normalizeVector(dx, dy, LENGTH), type: '', face: ''};
     state.bonds[chair][carbon].push(b);
     state.chair = chair; state.carbon = carbon; state.selected = b.id; armed = null; dismissedBond = '';
-    syncAngle(); save(); render();
+    save(); render();
     announce(`Bond ${letter(currentBonds().length - 1)} added at Chair ${chair + 1}, C${carbon + 1}. Choose its orientation and ring face in the dropdowns beside the bond.`);
     return true;
   }
@@ -145,11 +139,9 @@
   }
   function renderControls() {
     const bonds = currentBonds(), b = selectedBond();
-    for (const id of ['delete-bond', 'update-direction']) $(`#${id}`).disabled = !b;
-    $('#add-bond').disabled = bonds.length >= 2;
+    $('#delete-bond').disabled = !b;
     const selection = `Chair ${state.chair + 1} · C${state.carbon + 1}${b ? ` · bond ${letter(bonds.indexOf(b))}` : ''}`;
     setText($('#selected-description'), selection);
-    setText($('#keyboard-selection'), `Selected: ${selection}`);
     const result = b ? bondResult(state.chair, state.carbon, bonds.indexOf(b)) : null;
     $('#bond-feedback').className = `bond-feedback ${resultClass(result)}`;
     setText($('#bond-feedback-message'), b ? resultMessage(result) : bonds.length ? 'Select bond A or B in the drawing to label it.' : 'Draw a bond, then choose both labels.');
@@ -308,8 +300,9 @@
       const target = event.target.closest('[data-carbon], [data-bond]');
       if (!target) return; event.preventDefault();
       if (target.hasAttribute('data-carbon')) {
-        choose(chair, Number(target.dataset.carbon)); $('#keyboard-drawing').open = true; $('#bond-angle').focus();
-        announce(`Chair ${chair + 1}, C${state.carbon + 1}. Set an angle and add a bond.`);
+        choose(chair, Number(target.dataset.carbon));
+        armed = {chair, carbon: state.carbon}; svg.classList.add('armed');
+        announce(`Chair ${chair + 1}, C${state.carbon + 1} selected. Choose an endpoint in the drawing to add a bond.`);
       } else { choose(chair, Number(target.dataset.carbonIndex), target.dataset.bond); $('#inline-type-select').focus({preventScroll: true}); }
     });
   });
@@ -325,12 +318,12 @@
   $('#delete-bond').addEventListener('click', () => {
     const b = selectedBond(); if (!b) return; remember();
     state.bonds[state.chair][state.carbon] = currentBonds().filter(bond => bond.id !== b.id);
-    state.selected = currentBonds()[0]?.id || ''; dismissedBond = ''; syncAngle(); save(); render();
+    state.selected = currentBonds()[0]?.id || ''; dismissedBond = ''; save(); render();
     if (!state.selected) svgs[state.chair].querySelector(`[data-carbon="${state.carbon}"]`)?.focus({preventScroll: true});
     announce(`Bond deleted from Chair ${state.chair + 1}, C${state.carbon + 1}.`);
   });
   $('#undo').addEventListener('click', () => {
-    if (!history.length) return; Object.assign(state, JSON.parse(history.pop())); armed = null; preview = null; syncAngle(); save(); render(); announce('Last edit undone.');
+    if (!history.length) return; Object.assign(state, JSON.parse(history.pop())); armed = null; preview = null; save(); render(); announce('Last edit undone.');
   });
   $('#reset').addEventListener('click', () => {
     remember(); state.bonds = emptyBonds(); state.checked = [false, false]; state.selected = ''; armed = null; preview = null; state.solution = false; save(); render(); announce('Both drawings cleared. Use Undo to restore them.');
@@ -338,27 +331,11 @@
   $('#check-both').addEventListener('click', () => check([0, 1]));
   root.querySelectorAll('[data-check]').forEach(button => button.addEventListener('click', () => check([Number(button.dataset.check)])));
   $('#show-solution').addEventListener('change', event => { state.solution = event.target.checked; render(); announce(state.solution ? 'Solution overlay shown. Select a carbon to inspect its answer labels in both chairs.' : 'Solution overlay hidden. Your drawings are unchanged.'); });
-  function updateDirectionButtons() {
-    const angle = Number($('#bond-angle').value);
-    root.querySelectorAll('[data-angle]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.angle) === angle)));
-  }
-  root.querySelectorAll('[data-angle]').forEach(button => button.addEventListener('click', () => { $('#bond-angle').value = button.dataset.angle; updateDirectionButtons(); }));
-  $('#bond-angle').addEventListener('input', updateDirectionButtons);
-  function angleVector() {
-    const input = $('#bond-angle');
-    if (!input.value.trim() || !input.checkValidity()) { input.reportValidity(); announce('Enter an angle from 0° to 359°.'); return null; }
-    const angle = Number(input.value) * Math.PI / 180;
-    return {dx: LENGTH * Math.cos(angle), dy: -LENGTH * Math.sin(angle)};
-  }
-  $('#add-bond').addEventListener('click', () => { const v = angleVector(); if (v) addBond(state.chair, state.carbon, v.dx, v.dy); });
-  $('#update-direction').addEventListener('click', () => {
-    const b = selectedBond(), v = angleVector(); if (!b || !v) return; remember(); Object.assign(b, v); save(); render(); announce('Selected bond direction updated.');
-  });
   mobileLayout.addEventListener('change', render);
   if ('ResizeObserver' in window) {
     const editorResizeObserver = new ResizeObserver(positionInlineEditor);
     svgs.forEach(svg => editorResizeObserver.observe(svg.parentElement));
     editorResizeObserver.observe(inlineEditor);
   } else window.addEventListener('resize', positionInlineEditor);
-  restore(); syncAngle(); render();
+  restore(); render();
 })();
