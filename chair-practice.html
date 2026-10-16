@@ -40,7 +40,7 @@
         <svg id="chair-0" class="chair-canvas" viewBox="0 0 600 420" role="group" aria-labelledby="chair-0-title chair-0-description"><title id="chair-0-title">Chair 1 bond drawing</title><desc id="chair-0-description">Choose C1 through C6 and draw two bonds at each carbon. Select a bond to open its label dropdowns beside the drawing. Carbon and bond controls also work with Enter or Space. Use the controls below for a keyboard drawing alternative.</desc><g class="drawing"></g></svg>
         <svg id="bond-label-leader" class="bond-label-leader" aria-hidden="true" hidden><line></line></svg>
         <div id="bond-label-editor" class="bond-label-editor" role="group" aria-labelledby="bond-label-heading" hidden>
-          <div class="bond-label-heading"><strong id="bond-label-heading">C1 · bond A</strong><button type="button" id="close-bond-labels" aria-label="Close bond labels">×</button></div>
+          <div class="bond-label-heading"><strong id="bond-label-heading">C1 · bond A</strong><div class="bond-label-actions"><button type="button" id="delete-bond" class="delete-bond" aria-label="Delete selected bond">Delete</button><button type="button" id="close-bond-labels" aria-label="Close bond labels">×</button></div></div>
           <div class="bond-label-fields">
             <label for="inline-type-select">Orientation<select id="inline-type-select"><option value="">Choose…</option><option value="axial">Axial</option><option value="equatorial">Equatorial</option></select></label>
             <label for="inline-face-select">Ring face<select id="inline-face-select"><option value="">Choose…</option><option value="up">Up</option><option value="down">Down</option></select></label>
@@ -55,24 +55,12 @@
       <div class="panel-bottom"><span id="chair-1-feedback" class="small muted">Draw two bonds at each carbon.</span><button type="button" data-check="1" class="compact">Check chair 2</button></div>
     </section>
   </div>
+  <div id="bond-feedback" class="bond-feedback" aria-live="polite"><strong id="selected-description">Chair 1 · C1</strong><span id="bond-feedback-message">Draw a bond, then choose both labels.</span></div>
   <div class="drawing-caption"><p id="drawing-status" role="status" aria-live="polite">Choose any carbon to begin. C1 is highlighted in both chairs.</p><span class="small muted">Fixed view · bond length is standardized</span></div>
-  <div class="editor-grid">
-    <section class="editor-panel" aria-labelledby="editor-heading">
-      <div class="panel-heading"><h2 id="editor-heading">Your bond</h2><span id="selected-description" class="small muted">Chair 1 · C1</span></div>
-      <div class="selection-controls">
-        <label>Conformation<select id="chair-select"><option value="0">Chair 1</option><option value="1">Chair 2 · flipped</option></select></label>
-        <label>Carbon<select id="carbon-select"><option value="0">C1</option><option value="1">C2</option><option value="2">C3</option><option value="3">C4</option><option value="4">C5</option><option value="5">C6</option></select></label>
-        <label>Bond<select id="bond-select"><option value="">No bond yet</option></select></label>
-      </div>
-      <div class="label-controls">
-        <label>Orientation<select id="type-select" disabled><option value="">Choose a label</option><option value="axial">Axial</option><option value="equatorial">Equatorial</option></select></label>
-        <label>Ring face<select id="face-select" disabled><option value="">Choose a label</option><option value="up">Up</option><option value="down">Down</option></select></label>
-        <button type="button" id="delete-bond" disabled>Delete bond</button>
-      </div>
-      <p id="bond-feedback" class="bond-feedback">Draw a bond, then choose both labels.</p>
-      <details class="keyboard-drawing" id="keyboard-drawing">
+  <details class="keyboard-drawing" id="keyboard-drawing">
         <summary>Draw or adjust a bond with the keyboard</summary>
-        <p class="small muted">Choose the carbon above. Set the bond’s direction with an arrow or angle, then add a bond. To adjust a drawn bond, select it and choose “Update direction.”</p>
+        <p class="small muted">Select a carbon in either drawing with Enter or Space. Set the bond’s direction with an arrow or angle, then add a bond. To adjust a drawn bond, select it in the drawing and choose “Update direction.”</p>
+        <p id="keyboard-selection" class="small">Selected: Chair 1 · C1</p>
         <div class="direction-controls">
           <div class="direction-pad" role="group" aria-label="Choose a direction on the page">
             <button type="button" data-angle="135" aria-label="Point upper left">↖</button><button type="button" data-angle="90" aria-label="Point upward">↑</button><button type="button" data-angle="45" aria-label="Point upper right">↗</button>
@@ -81,9 +69,8 @@
           </div>
           <div class="angle-controls"><label>Angle on the page <span class="angle-entry"><input type="number" id="bond-angle" min="0" max="359" step="1" value="90" inputmode="numeric"><span>°</span></span></label><p class="small muted">0° → &nbsp; 90° ↑ &nbsp; 180° ← &nbsp; 270° ↓</p><div class="buttons"><button type="button" id="add-bond" class="primary">Add bond</button><button type="button" id="update-direction" disabled>Update direction</button></div></div>
         </div>
-      </details>
-    </section>
-    <section class="learning-panel" aria-labelledby="learning-heading">
+  </details>
+  <section class="learning-panel" aria-labelledby="learning-heading">
       <h2 id="learning-heading">Think through the flip</h2>
       <p><strong>Axial ⇄ equatorial.</strong><br><strong>Up stays up. Down stays down.</strong></p>
       <p class="small">The same carbon is highlighted in both chairs. Each carbon needs one axial and one equatorial bond, and one up and one down bond.</p>
@@ -92,8 +79,7 @@
       <label class="solution-toggle"><input type="checkbox" id="show-solution">Show solution overlay</label>
       <p id="solution-note" class="small muted" hidden>Dashed lines show the correct directions. Select a carbon to see its answer labels. Your drawings are still saved underneath.</p>
       <p id="flip-comparison" class="comparison" hidden></p>
-    </section>
-  </div>
+  </section>
   <section id="review-section" class="review-section" aria-labelledby="review-heading" hidden><div class="panel-heading"><h2 id="review-heading">Your feedback</h2><p id="review-summary" class="small"></p></div><p class="small muted">Choose a carbon below to inspect its bonds. Direction, orientation label, and face label are checked separately.</p><div id="review-grid" class="review-grid"></div></section>
   <section id="substituent-practice"></section>
   <p class="references">Explore the motion in the <a href="./cyclohexane.html">cyclohexane chair flip model</a>. Chemistry reference: <a href="https://openstax.org/books/organic-chemistry/pages/4-6-axial-and-equatorial-bonds-in-cyclohexane" target="_blank" rel="noopener">OpenStax · axial and equatorial bonds in cyclohexane</a>. Drawings are saved in this browser when local storage is available.</p>

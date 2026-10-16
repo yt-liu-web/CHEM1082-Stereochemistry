@@ -143,25 +143,16 @@
     svg.classList.toggle('armed', armed?.chair === chair);
     if (focusKey) scene.querySelector(`[data-focus-key="${focusKey}"]`)?.focus({preventScroll: true});
   }
-  function renderInspector() {
-    $('#chair-select').value = String(state.chair); $('#carbon-select').value = String(state.carbon);
+  function renderControls() {
     const bonds = currentBonds(), b = selectedBond();
-    const select = $('#bond-select'), optionKey = bonds.map(bond => bond.id).join(',');
-    if (select.dataset.optionKey !== optionKey) {
-      select.replaceChildren();
-      const empty = document.createElement('option'); empty.value = ''; empty.textContent = bonds.length ? 'Select a bond' : 'No bond yet'; select.append(empty);
-      bonds.forEach((bond, i) => { const option = document.createElement('option'); option.value = bond.id; option.textContent = `Bond ${letter(i)}`; select.append(option); });
-      select.dataset.optionKey = optionKey;
-    }
-    select.value = state.selected;
-    select.disabled = !bonds.length;
-    for (const id of ['type-select', 'face-select', 'delete-bond', 'update-direction']) $(`#${id}`).disabled = !b;
-    $('#type-select').value = b?.type || ''; $('#face-select').value = b?.face || '';
+    for (const id of ['delete-bond', 'update-direction']) $(`#${id}`).disabled = !b;
     $('#add-bond').disabled = bonds.length >= 2;
-    setText($('#selected-description'), `Chair ${state.chair + 1} · C${state.carbon + 1}${b ? ` · bond ${letter(bonds.indexOf(b))}` : ''}`);
+    const selection = `Chair ${state.chair + 1} · C${state.carbon + 1}${b ? ` · bond ${letter(bonds.indexOf(b))}` : ''}`;
+    setText($('#selected-description'), selection);
+    setText($('#keyboard-selection'), `Selected: ${selection}`);
     const result = b ? bondResult(state.chair, state.carbon, bonds.indexOf(b)) : null;
     $('#bond-feedback').className = `bond-feedback ${resultClass(result)}`;
-    setText($('#bond-feedback'), b ? resultMessage(result) : bonds.length ? 'Select bond A or B in the diagram or menu to label it.' : 'Draw a bond, then choose both labels.');
+    setText($('#bond-feedback-message'), b ? resultMessage(result) : bonds.length ? 'Select bond A or B in the drawing to label it.' : 'Draw a bond, then choose both labels.');
     $('#undo').disabled = !history.length;
     $('#reset').disabled = !state.bonds.flat(2).length;
     $('#show-solution').checked = state.solution; $('#solution-note').hidden = !state.solution;
@@ -266,7 +257,7 @@
     setText($('#review-summary'), `${correct} of ${possible} checked bonds fully correct`);
     if (focused) container.querySelector(`[data-review="${focused}"]`)?.focus({preventScroll: true});
   }
-  function render() { svgs.forEach((_, chair) => draw(chair)); renderInspector(); renderInlineEditor(); renderProgress(); renderReview(); }
+  function render() { svgs.forEach((_, chair) => draw(chair)); renderControls(); renderInlineEditor(); renderProgress(); renderReview(); }
   function check(chairs) {
     chairs.forEach(chair => { state.checked[chair] = true; });
     render();
@@ -322,10 +313,7 @@
       } else { choose(chair, Number(target.dataset.carbonIndex), target.dataset.bond); $('#inline-type-select').focus({preventScroll: true}); }
     });
   });
-  $('#chair-select').addEventListener('change', event => { const chair = Number(event.target.value); choose(chair, state.carbon, state.bonds[chair][state.carbon][0]?.id || ''); save(); });
-  $('#carbon-select').addEventListener('change', event => { const carbon = Number(event.target.value); choose(state.chair, carbon, state.bonds[state.chair][carbon][0]?.id || ''); save(); });
-  $('#bond-select').addEventListener('change', event => { state.selected = event.target.value; dismissedBond = ''; syncAngle(); render(); });
-  for (const [id, prop] of [['type-select', 'type'], ['face-select', 'face'], ['inline-type-select', 'type'], ['inline-face-select', 'face']]) $(`#${id}`).addEventListener('change', event => {
+  for (const [id, prop] of [['inline-type-select', 'type'], ['inline-face-select', 'face']]) $(`#${id}`).addEventListener('change', event => {
     const b = selectedBond(); if (!b) return; remember(); b[prop] = event.target.value; save(); render();
   });
   function closeInlineEditor() {
@@ -337,7 +325,8 @@
   $('#delete-bond').addEventListener('click', () => {
     const b = selectedBond(); if (!b) return; remember();
     state.bonds[state.chair][state.carbon] = currentBonds().filter(bond => bond.id !== b.id);
-    state.selected = currentBonds()[0]?.id || ''; syncAngle(); save(); render();
+    state.selected = currentBonds()[0]?.id || ''; dismissedBond = ''; syncAngle(); save(); render();
+    if (!state.selected) svgs[state.chair].querySelector(`[data-carbon="${state.carbon}"]`)?.focus({preventScroll: true});
     announce(`Bond deleted from Chair ${state.chair + 1}, C${state.carbon + 1}.`);
   });
   $('#undo').addEventListener('click', () => {
