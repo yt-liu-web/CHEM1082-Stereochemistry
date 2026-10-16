@@ -2,7 +2,9 @@
    C1-C6 identities and the ring's up face are unchanged by a ring flip. */
 (function (root) {
   'use strict';
-  const BOND_LENGTH = 60, TOLERANCE_DEGREES = 22;
+  // Accept approximate student strokes. The two target rays at every carbon
+  // are more than 97 degrees apart, so these 45-degree windows stay distinct.
+  const BOND_LENGTH = 60, TOLERANCE_DEGREES = 45;
   const elevation = 18 * Math.PI / 180;
   const radius = 165, height = radius / Math.sqrt(32);
   const normalizeVector = (dx, dy, length = BOND_LENGTH) => {
@@ -39,7 +41,7 @@
     if(bonds.length>=2) assignment = errors[0][0]+errors[1][1]<=errors[0][1]+errors[1][0] ? [0,1] : [1,0];
     const results = bonds.map((bond,i)=>{
       const target = expected[assignment[i]??0];
-      const geometryCorrect = i<2 && angularError(bond,target)<=TOLERANCE_DEGREES;
+      const geometryCorrect = i<2 && angularError(bond,target)<=TOLERANCE_DEGREES+1e-9;
       const labelCorrect = bond.type===target.type, faceCorrect = bond.face===target.face;
       const correct = geometryCorrect && labelCorrect && faceCorrect;
       const notes = [];

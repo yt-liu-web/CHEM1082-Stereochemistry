@@ -26,7 +26,7 @@
   </header>
   <ol class="steps" aria-label="How to practice">
     <li><span>1</span><div><strong>Draw a bond</strong><br>Drag from a carbon, or tap a carbon and then an endpoint.</div></li>
-    <li><span>2</span><div><strong>Give it two labels</strong><br>Select a bond and choose its orientation and ring face below.</div></li>
+    <li><span>2</span><div><strong>Give it two labels</strong><br>Select a bond and use the dropdowns beside it.</div></li>
     <li><span>3</span><div><strong>Check both chairs</strong><br>Carbon numbers track the same atoms through the flip.</div></li>
   </ol>
   <div class="practice-toolbar">
@@ -36,12 +36,22 @@
   <div class="drawing-grid">
     <section class="chair-panel" aria-labelledby="chair-0-heading">
       <div class="panel-heading"><div><p class="eyebrow">Starting conformation</p><h2 id="chair-0-heading">Chair 1</h2></div><span id="chair-0-progress" class="panel-count">0 / 12 bonds</span></div>
-      <svg id="chair-0" class="chair-canvas" viewBox="0 0 600 420" role="group" aria-labelledby="chair-0-title chair-0-description"><title id="chair-0-title">Chair 1 bond drawing</title><desc id="chair-0-description">Choose C1 through C6 and draw two bonds at each carbon. Carbon and bond controls also work with Enter or Space. Use the controls below for a keyboard drawing alternative.</desc><g class="drawing"></g></svg>
+      <div class="chair-stage">
+        <svg id="chair-0" class="chair-canvas" viewBox="0 0 600 420" role="group" aria-labelledby="chair-0-title chair-0-description"><title id="chair-0-title">Chair 1 bond drawing</title><desc id="chair-0-description">Choose C1 through C6 and draw two bonds at each carbon. Select a bond to open its label dropdowns beside the drawing. Carbon and bond controls also work with Enter or Space. Use the controls below for a keyboard drawing alternative.</desc><g class="drawing"></g></svg>
+        <svg id="bond-label-leader" class="bond-label-leader" aria-hidden="true" hidden><line></line></svg>
+        <div id="bond-label-editor" class="bond-label-editor" role="group" aria-labelledby="bond-label-heading" hidden>
+          <div class="bond-label-heading"><strong id="bond-label-heading">C1 · bond A</strong><button type="button" id="close-bond-labels" aria-label="Close bond labels">×</button></div>
+          <div class="bond-label-fields">
+            <label for="inline-type-select">Orientation<select id="inline-type-select"><option value="">Choose…</option><option value="axial">Axial</option><option value="equatorial">Equatorial</option></select></label>
+            <label for="inline-face-select">Ring face<select id="inline-face-select"><option value="">Choose…</option><option value="up">Up</option><option value="down">Down</option></select></label>
+          </div>
+        </div>
+      </div>
       <div class="panel-bottom"><span id="chair-0-feedback" class="small muted">Draw two bonds at each carbon.</span><button type="button" data-check="0" class="compact">Check chair 1</button></div>
     </section>
     <section class="chair-panel" aria-labelledby="chair-1-heading">
       <div class="panel-heading"><div><p class="eyebrow">After the ring flip</p><h2 id="chair-1-heading">Chair 2</h2></div><span id="chair-1-progress" class="panel-count">0 / 12 bonds</span></div>
-      <svg id="chair-1" class="chair-canvas" viewBox="0 0 600 420" role="group" aria-labelledby="chair-1-title chair-1-description"><title id="chair-1-title">Chair 2 bond drawing</title><desc id="chair-1-description">The same six numbered carbons in the flipped chair. Draw and label two bonds independently at each carbon.</desc><g class="drawing"></g></svg>
+      <div class="chair-stage"><svg id="chair-1" class="chair-canvas" viewBox="0 0 600 420" role="group" aria-labelledby="chair-1-title chair-1-description"><title id="chair-1-title">Chair 2 bond drawing</title><desc id="chair-1-description">The same six numbered carbons in the flipped chair. Draw and label two bonds independently at each carbon. Select a bond to open its label dropdowns beside the drawing.</desc><g class="drawing"></g></svg></div>
       <div class="panel-bottom"><span id="chair-1-feedback" class="small muted">Draw two bonds at each carbon.</span><button type="button" data-check="1" class="compact">Check chair 2</button></div>
     </section>
   </div>

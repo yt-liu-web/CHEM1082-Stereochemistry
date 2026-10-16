@@ -104,7 +104,7 @@
     const matches = geometry().bonds.filter(bond => bond.carbon === carbon).map(bond => ({
       bond, score: (vector.dx * bond.dx + vector.dy * bond.dy) / (length * Math.hypot(bond.dx, bond.dy))
     })).sort((a, b) => b.score - a.score);
-    return matches[0]?.score >= Math.cos((core.TOLERANCE_DEGREES || 22) * Math.PI / 180) ? matches[0].bond : null;
+    return matches[0]?.score + 1e-12 >= Math.cos((core.TOLERANCE_DEGREES || 45) * Math.PI / 180) ? matches[0].bond : null;
   }
   function clearFeedback() {
     checked = false;
@@ -199,7 +199,7 @@
     if (!chosen()[0] || !chosen()[2]) {
       feedback.textContent = 'Finish both groups: draw CH₃ from C1 and i-Pr from C3, then check again.';
     } else if (!methyl || !isopropyl) {
-      feedback.textContent = `${[!methyl ? 'C1' : null, !isopropyl ? 'C3' : null].filter(Boolean).join(' and ')}: redraw along an axial or equatorial direction. Turn on the bond-direction guides if you need help. A drawing may vary by up to ${core.TOLERANCE_DEGREES || 22}° from either direction.`;
+      feedback.textContent = `${[!methyl ? 'C1' : null, !isopropyl ? 'C3' : null].filter(Boolean).join(' and ')}: aim roughly along an axial or equatorial direction. Turn on the bond-direction guides if you need help. Approximate angles are accepted (within ${core.TOLERANCE_DEGREES || 45}°).`;
     } else {
       const relation = methyl.face === isopropyl.face ? 'cis' : 'trans';
       const rightRelation = relation === state.isomer;
