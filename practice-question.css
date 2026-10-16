@@ -26,11 +26,18 @@
 #substituent-practice .pr-guide-toggle input{flex-shrink:0;accent-color:var(--link)}
 #substituent-practice #pr-erase{font-size:13px;width:100%;text-align:left}
 #substituent-practice .pr-assignment{font-size:12px;line-height:1.6;color:var(--muted);margin-top:14px;min-height:38px}
-#substituent-practice .pr-actions{margin-top:18px}
+#substituent-practice .pr-check-area{margin-top:18px}
+#substituent-practice .pr-actions{margin-top:12px}
 #substituent-practice .pr-feedback{margin-top:14px;border-radius:8px;line-height:1.55;font-size:14px}
 #substituent-practice .pr-feedback:empty{display:none}
 #substituent-practice .pr-feedback-note{padding:14px 16px;border:1px solid var(--line);background:var(--soft)}
-#substituent-practice .pr-feedback-success{padding:14px 16px;border:1px solid var(--face);background:var(--soft)}
+#substituent-practice .pr-feedback-success{padding:16px;border:2px solid var(--good);border-left-width:6px;background:var(--good-bg)}
+#substituent-practice .pr-feedback-incorrect{padding:16px;border:2px solid light-dark(#ad2626,#ffb1b1);border-left-width:6px;background:light-dark(#fff1f1,#3d2020)}
+#substituent-practice .pr-feedback-incomplete{padding:16px;border:2px solid light-dark(#986000,#ffd17b);border-left-width:6px;background:light-dark(#fff8e8,#382e1c)}
+#substituent-practice h3.pr-verdict{font-size:21px;font-weight:750;line-height:1.25;margin:0 0 10px}
+#substituent-practice .pr-feedback-success .pr-verdict{color:var(--good)}
+#substituent-practice .pr-feedback-incorrect .pr-verdict{color:light-dark(#ad2626,#ffb1b1)}
+#substituent-practice .pr-feedback-incomplete .pr-verdict{color:light-dark(#865400,#ffd17b)}
 #substituent-practice .pr-feedback p{margin:0}
 #substituent-practice .pr-feedback p+p{margin-top:8px}
 #substituent-practice .pr-answer{margin-top:14px;padding:14px 16px;border-left:4px solid var(--face);background:var(--soft);font-size:14px}

@@ -10,3 +10,4 @@
 @media(max-width:480px){.chair-stage{padding-block:72px}}
 
 .bond-label-heading>strong{white-space:nowrap}.bond-label-actions{display:flex;align-items:center;gap:2px}.bond-label-heading .delete-bond{width:auto;min-height:28px;padding:0 5px;font-size:12px;font-weight:500;color:var(--bad)}
+.bond-feedback{align-items:center;border:2px solid transparent;min-height:58px}.bond-feedback.correct{border-color:var(--good)}.bond-feedback.needs-work{border-color:light-dark(#a92822,#ffb8af);color:light-dark(#8f201b,#ffc3bb);background:light-dark(#fff1ef,#402725)}#bond-result-label{font-size:17px;font-weight:750}

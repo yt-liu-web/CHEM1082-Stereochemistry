@@ -7,7 +7,7 @@ The conformation lab homepage (`index.html`) contains navigation links to five i
 - **1,2-dibromoethane** (`dibromoethane.html`): 3D viewing and Newman projections from either viewing direction.
 - **Butane** (`butane.html`): interactive butane conformation model.
 - **Cyclohexane** (`cyclohexane.html`): chair flips, axial/equatorial and up/down labels, and a top/Haworth-style view.
-- **Cyclohexane chair drawing practice** (`chair-practice.html`): draw both bonds at C1–C6 in each chair, label axial/equatorial and up/down, and check the drawing and labels independently. Includes cis/trans 1-methyl-3-isopropylcyclohexane stability practice.
+- **Cyclohexane chair drawing practice** (`chair-practice.html`): draw both bonds at C1–C6 in each chair, label axial/equatorial and up/down, and check the drawing and labels independently. Includes cis/trans 1-methyl-2-isopropylcyclohexane stability practice.
 
 The homepage also links to the separate configuration lab (`configuration.html`), which currently has no models.
 
@@ -52,4 +52,4 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 
 Open `chair-practice.html` from the conformation homepage or the cyclohexane explorer. Draw both outgoing bonds at each numbered carbon, select a bond, and assign axial/equatorial and up/down labels. Check either chair or both; the solution overlay leaves student work intact. Draw by dragging from a carbon or selecting a carbon and then an endpoint; Enter or Space selects a focused carbon or bond. Drawings are saved only in the current browser.
 
-The additional 1-methyl-3-isopropylcyclohexane question includes cis and trans cases because the name alone does not specify their relationship. The most stable cis chair is diequatorial. The most stable trans chair places isopropyl equatorial and methyl axial. See [OpenStax section 4.8](https://openstax.org/books/organic-chemistry/pages/4-8-conformations-of-disubstituted-cyclohexanes).
+The additional 1-methyl-2-isopropylcyclohexane question includes cis and trans cases because the name alone does not specify their relationship. For cis-1,2, the most stable chair places isopropyl equatorial and methyl axial. For trans-1,2, the most stable chair is diequatorial. See [OpenStax section 4.8](https://openstax.org/books/organic-chemistry/pages/4-8-conformations-of-disubstituted-cyclohexanes).

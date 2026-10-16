@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Draw and label the axial and equatorial bonds in both cyclohexane chair conformations, with interactive feedback.">
   <title>Cyclohexane · Draw the chair bonds</title>
-  <link rel="stylesheet" href="./chair-practice.css?v=20261016-simple-drawing">
-  <link rel="stylesheet" href="./practice-question.css">
+  <link rel="stylesheet" href="./chair-practice.css?v=20261016-adjacent">
+  <link rel="stylesheet" href="./practice-question.css?v=20261016-adjacent">
   <script defer src="./chair-core.js"></script>
-  <script defer src="./chair-practice.js?v=20261016-simple-drawing"></script>
-  <script defer src="./practice-question.js?v=20261016-chair-flip"></script>
+  <script defer src="./chair-practice.js?v=20261016-adjacent"></script>
+  <script defer src="./practice-question.js?v=20261016-adjacent"></script>
 </head>
 <body>
 <nav class="model-nav" aria-label="Stereochemistry models">
@@ -55,7 +55,7 @@
       <div class="panel-bottom"><span id="chair-1-feedback" class="small muted">Draw two bonds at each carbon.</span><button type="button" data-check="1" class="compact">Check chair 2</button></div>
     </section>
   </div>
-  <div id="bond-feedback" class="bond-feedback" aria-live="polite"><strong id="selected-description">Chair 1 · C1</strong><span id="bond-feedback-message">Draw a bond, then choose both labels.</span></div>
+  <div id="bond-feedback" class="bond-feedback" aria-live="polite"><strong id="selected-description">Chair 1 · C1</strong><strong id="bond-result-label" hidden></strong><span id="bond-feedback-message">Draw a bond, then choose both labels.</span></div>
   <section id="review-section" class="review-section" aria-labelledby="review-heading" hidden><div class="panel-heading"><h2 id="review-heading">Your feedback</h2><p id="review-summary" class="small"></p></div><p class="small muted">Choose a carbon below to inspect its bonds. Direction, orientation label, and face label are checked separately.</p><div id="review-grid" class="review-grid"></div></section>
   <div class="drawing-caption"><p id="drawing-status" role="status" aria-live="polite">Choose any carbon to begin. C1 is highlighted in both chairs.</p><span class="small muted">Fixed view · bond length is standardized</span></div>
   <section class="learning-panel" aria-labelledby="learning-heading">

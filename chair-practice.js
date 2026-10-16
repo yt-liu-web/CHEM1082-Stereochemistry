@@ -77,7 +77,7 @@
   function resultClass(result) { return result ? result.correct ? 'correct' : 'needs-work' : ''; }
   function resultMessage(result) {
     if (!result) return 'Choose an orientation and a ring face, then check your answers.';
-    if (result.correct) return 'Correct — direction, orientation, and ring face all match.';
+    if (result.correct) return 'Direction, orientation, and ring face all match.';
     return [result.geometryCorrect ? 'Direction: correct.' : 'Direction: adjust your drawing.', result.labelCorrect ? 'Orientation: correct.' : `Orientation: this bond should be ${result.expectedType}.`, result.faceCorrect ? 'Ring face: correct.' : `Ring face: this bond should be ${result.expectedFace}.`].join(' ');
   }
   function placeLabel(scene, p, b, text, klass, reserved) {
@@ -144,6 +144,8 @@
     setText($('#selected-description'), selection);
     const result = b ? bondResult(state.chair, state.carbon, bonds.indexOf(b)) : null;
     $('#bond-feedback').className = `bond-feedback ${resultClass(result)}`;
+    $('#bond-result-label').hidden = !result;
+    setText($('#bond-result-label'), result ? result.correct ? '✓ Correct' : '✕ Incorrect' : '');
     setText($('#bond-feedback-message'), b ? resultMessage(result) : bonds.length ? 'Select bond A or B in the drawing to label it.' : 'Draw a bond, then choose both labels.');
     $('#undo').disabled = !history.length;
     $('#reset').disabled = !state.bonds.flat(2).length;
