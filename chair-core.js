@@ -1,5 +1,5 @@
 /* Ideal tetrahedral cyclohexane chairs, viewed from a fixed perspective.
-   C1-C6 identities and the ring's up face are unchanged by a ring flip. */
+   C1-C6 identities and the ring's up face are unchanged by a chair flip. */
 (function (root) {
   'use strict';
   // Accept approximate student strokes. The two target rays at every carbon

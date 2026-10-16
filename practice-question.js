@@ -207,7 +207,7 @@
       const relationLine = document.createElement('p');
       relationLine.textContent = `Ring faces: ${groupName(0)} is ${methyl.face}; ${groupName(2)} is ${isopropyl.face}. This is ${relation}${rightRelation ? ' — correct for this case.' : `; this question asks for ${state.isomer}.`}`;
       const stabilityLine = document.createElement('p');
-      stabilityLine.textContent = !rightRelation ? 'Stability: first correct the cis/trans relationship; a chair flip cannot change it.' : stable ? state.isomer === 'cis' ? 'Stability: correct. Both groups are equatorial, avoiding their axial 1,3-diaxial interactions.' : 'Stability: correct. Trans-1,3 requires one axial group. The larger i-Pr group is equatorial and CH₃ is axial.' : state.isomer === 'cis' ? 'Stability: this is the less stable diaxial chair. A ring flip makes both groups equatorial while preserving both ring faces.' : 'Stability: this is the less stable chair. A ring flip places the larger i-Pr group equatorial and CH₃ axial while preserving both ring faces.';
+      stabilityLine.textContent = !rightRelation ? 'Stability: first correct the cis/trans relationship; a chair flip cannot change it.' : stable ? state.isomer === 'cis' ? 'Stability: correct. Both groups are equatorial, avoiding their axial 1,3-diaxial interactions.' : 'Stability: correct. Trans-1,3 requires one axial group. The larger i-Pr group is equatorial and CH₃ is axial.' : state.isomer === 'cis' ? 'Stability: this is the less stable diaxial chair. A chair flip makes both groups equatorial while preserving both ring faces.' : 'Stability: this is the less stable chair. A chair flip places the larger i-Pr group equatorial and CH₃ axial while preserving both ring faces.';
       feedback.replaceChildren(relationLine, stabilityLine);
       if (rightRelation && stable) feedback.className = 'pr-feedback pr-feedback-success';
     }
@@ -219,7 +219,7 @@
     $('#pr-reveal').textContent = answerVisible ? 'Hide solution' : 'Show one solution';
     if (answerVisible) {
       const methyl = bondAt(0, state.isomer === 'cis' ? 'equatorial' : 'axial'), isopropyl = bondAt(2, 'equatorial');
-      $('#pr-answer').textContent = `Dashed green bonds show one lowest-energy answer in Chair ${state.chair + 1}: C1–CH₃ ${methyl.type}, ${methyl.face}; C3–i-Pr equatorial, ${isopropyl.face}. ${state.isomer === 'cis' ? 'A cis-1,3 relationship allows the diequatorial chair. The ring-flipped form is diaxial and less stable.' : 'A trans-1,3 relationship always has one axial and one equatorial group. Isopropyl has a greater axial penalty than methyl, so i-Pr is equatorial in the more stable chair.'} Up/down refers to the ring face, not the direction of a line on this screen.`;
+      $('#pr-answer').textContent = `Dashed green bonds show one lowest-energy answer in Chair ${state.chair + 1}: C1–CH₃ ${methyl.type}, ${methyl.face}; C3–i-Pr equatorial, ${isopropyl.face}. ${state.isomer === 'cis' ? 'A cis-1,3 relationship allows the diequatorial chair. The flipped chair is diaxial and less stable.' : 'A trans-1,3 relationship always has one axial and one equatorial group. Isopropyl has a greater axial penalty than methyl, so i-Pr is equatorial in the more stable chair.'} Up/down refers to the ring face, not the direction of a line on this screen.`;
     }
     render();
   }

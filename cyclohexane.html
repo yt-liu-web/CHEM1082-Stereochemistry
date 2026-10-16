@@ -38,7 +38,7 @@
 </div>
 <section class="mapping"><h2 id="mapping-heading">Bond positions · Chair 1</h2><p class="mapping-intro">Every carbon has one up H and one down H. At either chair, it also has one axial and one equatorial H.</p><div class="table-wrap"><table aria-labelledby="mapping-heading"><thead><tr><th scope="col">Carbon</th><th scope="col">H↑ up</th><th scope="col">H↓ down</th></tr></thead><tbody id="position-table"></tbody></table></div></section>
 <div class="notes"><p><strong>Up/down describes a ring face.</strong> It does not change when you rotate the model. Equatorial bonds point outward and can be either up or down.</p><p>The endpoint chairs are idealized. The flip animation follows a schematic nonplanar path; intermediate shapes are not calculated transition structures. Axial/equatorial labels are shown only at the chairs.</p></div>
-<p class="references">Chemistry reference: <a href="https://openstax.org/books/organic-chemistry/pages/4-6-axial-and-equatorial-bonds-in-cyclohexane" target="_blank" rel="noopener">OpenStax · axial/equatorial bonds and ring flips</a>. “Haworth-style” adapts the <a href="https://goldbook.iupac.org/terms/view/H02749" target="_blank" rel="noopener">Haworth representation</a> to map cyclohexane’s ring faces.</p>
+<p class="references">Chemistry reference: <a href="https://openstax.org/books/organic-chemistry/pages/4-6-axial-and-equatorial-bonds-in-cyclohexane" target="_blank" rel="noopener">OpenStax · axial/equatorial bonds and chair flips</a>. “Haworth-style” adapts the <a href="https://goldbook.iupac.org/terms/view/H02749" target="_blank" rel="noopener">Haworth representation</a> to map cyclohexane’s ring faces.</p>
 </main>
 <script id="cyclohexane-core">
 (() => {
@@ -113,7 +113,7 @@
   const roleColor=role=>`var(--${role==='axial'?'ax':role==='equatorial'?'eq':'move'})`;
   const pretty=role=>role==='moving'?'moving':role[0].toUpperCase()+role.slice(1);
   const faceSymbol=face=>face==='up'?'↑':'↓';
-  const phase=()=>state.progress<1e-6?'Chair 1':state.progress>1-1e-6?'Chair 2':'During flip';
+  const phase=()=>state.progress<1e-6?'Chair 1':state.progress>1-1e-6?'Chair 2':'Duchair flip';
   function line(a,b,attrs={}){return el('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],'stroke-linecap':'round',...attrs});}
   function setup(svg){const w=Math.max(250,svg.clientWidth),h=svg.clientHeight;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);const scene=svg.querySelector('.scene');scene.replaceChildren();return {w,h,scene};}
   function label(scene,x,y,text,attrs={}){scene.append(el('text',{x,y,'text-anchor':'middle','dominant-baseline':'middle',...attrs},text));}
@@ -214,7 +214,7 @@
     views.haworth.dataset.selected=state.selected+1;
   }
   function updateText(){
-    const current=phase(),moving=current==='During flip',up=core.roleAt(state.progress,state.selected,'up'),down=core.roleAt(state.progress,state.selected,'down');
+    const current=phase(),moving=current==='Duchair flip',up=core.roleAt(state.progress,state.selected,'up'),down=core.roleAt(state.progress,state.selected,'down');
     $('#flip-progress').value=Math.round(state.progress*100);setText($('#progress-value'),moving?`${Math.round(state.progress*100)}%`:current);
     $('#selected-carbon').value=state.selected;$('#all-labels').checked=state.allLabels;$('#mean-plane').checked=state.plane;
     root.querySelectorAll('[data-chair]').forEach(button=>button.setAttribute('aria-pressed',String(Math.abs(state.progress-Number(button.dataset.chair))<1e-6)));
