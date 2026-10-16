@@ -1,12 +1,13 @@
 # CHEM 1082 Stereochemistry Models
 
-The conformation lab homepage (`index.html`) contains navigation links to five interactive models. Each model opens on its own page:
+The conformation lab homepage (`index.html`) contains navigation links to five interactive models and a chair drawing exercise. Each opens on its own page:
 
 - **2-bromobutane** (`bromobutane.html`): free 3D rotation, comparison with the start, C2–C3 rotation, and Br/H removal and insertion.
 - **CHClBr–CHClBr** (`newman.html`): the molecular model and matching fill-in-the-blank Newman projections.
 - **1,2-dibromoethane** (`dibromoethane.html`): 3D viewing and Newman projections from either viewing direction.
 - **Butane** (`butane.html`): interactive butane conformation model.
 - **Cyclohexane** (`cyclohexane.html`): chair flips, axial/equatorial and up/down labels, and a top/Haworth-style view.
+- **Cyclohexane chair drawing practice** (`chair-practice.html`): draw both bonds at C1–C6 in each chair, label axial/equatorial and up/down, and check the drawing and labels independently. Includes cis/trans 1-methyl-3-isopropylcyclohexane stability practice.
 
 The homepage also links to the separate configuration lab (`configuration.html`), which currently has no models.
 
@@ -14,7 +15,7 @@ Each model links back to the conformation lab homepage and to the other models. 
 
 ## Publish with GitHub Pages
 
-1. Upload all files in this folder to the root of the repository's `main` branch. Keep all seven HTML pages and both PDF files together.
+1. Upload all files in this folder to the root of the repository's `main` branch. Keep the HTML, JavaScript, CSS, and PDF files together.
 2. In the repository, open **Settings → Pages**.
 3. Under **Build and deployment**, choose **Deploy from a branch**, select **main** and **/ (root)**, then save.
 4. Wait for GitHub to finish deploying. Share the website address shown on the Pages settings screen with students.
@@ -40,9 +41,13 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 - `dibromoethane.html` — 1,2-dibromoethane Newman projection practice
 - `butane.html` — interactive butane conformation model
 - `cyclohexane.html` — interactive cyclohexane chair and top-view model
+- `chair-practice.html`, `chair-practice.css`, `chair-practice.js` — chair bond drawing and labeling exercise
+- `chair-core.js` — shared chair geometry and answer checking
+- `practice-question.css`, `practice-question.js` — substituted cyclohexane stability practice
 - `chclbr-newman-worksheet.pdf` — printable student worksheet
 - `chclbr-newman-answer-key.pdf` — printable answer key
 - `.nojekyll` — serves the files directly through GitHub Pages
+
 
 
 
