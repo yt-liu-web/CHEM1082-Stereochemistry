@@ -5,13 +5,14 @@
   if (!core || !root) return;
   const $ = selector => root.querySelector(selector);
   const svgs = [$('#chair-0'), $('#chair-1')];
+  const inlineEditor = $('#bond-label-editor'), inlineLeader = $('#bond-label-leader');
   const NS = 'http://www.w3.org/2000/svg';
   const KEY = 'chem1082:chair-drawing:v1';
   const LENGTH = 60;
   const mobileLayout = window.matchMedia('(max-width: 680px)');
   const emptyBonds = () => [Array.from({length: 6}, () => []), Array.from({length: 6}, () => [])];
   const state = {bonds: emptyBonds(), chair: 0, carbon: 0, selected: '', checked: [false, false], solution: false};
-  let nextId = 1, armed = null, drag = null, history = [], preview = null;
+  let nextId = 1, armed = null, drag = null, history = [], preview = null, dismissedBond = '';
   const letter = i => i === 0 ? 'A' : 'B';
   const name = text => text ? text[0].toUpperCase() + text.slice(1) : '';
   const currentBonds = () => state.bonds[state.chair][state.carbon];
@@ -57,7 +58,7 @@
   }
   function choose(chair, carbon, bondId = '') {
     state.chair = chair; state.carbon = carbon; state.selected = bondId;
-    armed = null;
+    armed = null; dismissedBond = '';
     syncAngle();
     render();
   }
@@ -72,9 +73,9 @@
     remember();
     const b = {id: `b${nextId++}`, ...core.normalizeVector(dx, dy, LENGTH), type: '', face: ''};
     state.bonds[chair][carbon].push(b);
-    state.chair = chair; state.carbon = carbon; state.selected = b.id; armed = null;
+    state.chair = chair; state.carbon = carbon; state.selected = b.id; armed = null; dismissedBond = '';
     syncAngle(); save(); render();
-    announce(`Bond ${letter(currentBonds().length - 1)} added at Chair ${chair + 1}, C${carbon + 1}. Choose its orientation and ring face below.`);
+    announce(`Bond ${letter(currentBonds().length - 1)} added at Chair ${chair + 1}, C${carbon + 1}. Choose its orientation and ring face in the dropdowns beside the bond.`);
     return true;
   }
   function grade(chair, carbon) { return core.gradeCarbon(chair, carbon, state.bonds[chair][carbon]); }
@@ -171,6 +172,65 @@
       setText($('#flip-comparison'), `Follow the up bond at C${state.carbon + 1}: ${types[0]} in Chair 1 → ${types[1]} in Chair 2. It stays up through the flip. The down bond swaps orientation too.`);
     }
   }
+  function positionInlineEditor() {
+    const b = selectedBond();
+    if (inlineEditor.hidden || !b) return;
+    const svg = svgs[state.chair], stage = svg.parentElement, matrix = svg.getScreenCTM();
+    if (!matrix || !stage.clientWidth) return;
+    const bounds = stage.getBoundingClientRect(), model = core.chairs[state.chair];
+    const toStage = p => {
+      const point = svg.createSVGPoint(); point.x = p.x; point.y = p.y;
+      const screen = point.matrixTransform(matrix);
+      return {x: screen.x - bounds.left, y: screen.y - bounds.top};
+    };
+    const carbon = model.carbons[state.carbon], endpoint = toStage({x: carbon.x + b.dx, y: carbon.y + b.dy});
+    const width = inlineEditor.offsetWidth, height = inlineEditor.offsetHeight, margin = 8, gap = 22;
+    const maxX = Math.max(margin, stage.clientWidth - width - margin), maxY = Math.max(margin, stage.clientHeight - height - margin);
+    // Keep the active carbon and endpoint visible, then prefer nearby open space.
+    const obstacles = model.carbons.map((p, i) => ({...toStage(p), radius: mobileLayout.matches ? 18 : 17, weight: i === state.carbon ? 100000 : 10000}));
+    model.carbons.forEach((p, i) => {
+      const next = model.carbons[(i + 1) % 6];
+      for (const t of [.25, .5, .75]) obstacles.push({...toStage({x: p.x + (next.x - p.x) * t, y: p.y + (next.y - p.y) * t}), radius: 5, weight: 1500});
+    });
+    state.bonds[state.chair].forEach((bonds, i) => bonds.forEach(bond => {
+      const p = model.carbons[i];
+      obstacles.push({...toStage({x: p.x + bond.dx, y: p.y + bond.dy}), radius: 15, weight: bond.id === b.id ? 100000 : 2000});
+      if (bond.id === b.id) for (const t of [.25, .5, .75]) obstacles.push({...toStage({x: p.x + bond.dx * t, y: p.y + bond.dy * t}), radius: 7, weight: 100000});
+    }));
+    const candidates = [];
+    const xs = [endpoint.x - width / 2, endpoint.x + gap, endpoint.x - width - gap, margin, maxX];
+    for (const x of xs) for (const y of [endpoint.y - height - gap, endpoint.y + gap, margin, maxY]) candidates.push({x, y});
+    for (const x of [endpoint.x + gap, endpoint.x - width - gap]) candidates.push({x, y: endpoint.y - height / 2});
+    let best = null, bestScore = Infinity;
+    for (const candidate of candidates) {
+      const x = Math.max(margin, Math.min(maxX, candidate.x)), y = Math.max(margin, Math.min(maxY, candidate.y));
+      const distance = Math.hypot(Math.max(x - endpoint.x, 0, endpoint.x - x - width), Math.max(y - endpoint.y, 0, endpoint.y - y - height));
+      let score = distance;
+      for (const obstacle of obstacles) {
+        const dx = Math.max(x - obstacle.x, 0, obstacle.x - x - width), dy = Math.max(y - obstacle.y, 0, obstacle.y - y - height);
+        if (Math.hypot(dx, dy) < obstacle.radius) score += obstacle.weight;
+      }
+      if (score < bestScore) { bestScore = score; best = {x, y}; }
+    }
+    inlineEditor.style.left = `${Math.round(best.x)}px`; inlineEditor.style.top = `${Math.round(best.y)}px`;
+    const edge = {x: Math.max(best.x, Math.min(best.x + width, endpoint.x)), y: Math.max(best.y, Math.min(best.y + height, endpoint.y))};
+    const distance = Math.hypot(edge.x - endpoint.x, edge.y - endpoint.y);
+    inlineLeader.hidden = distance < 18;
+    const connector = inlineLeader.querySelector('line'), offset = distance ? 14 / distance : 0;
+    for (const [key, value] of Object.entries({x1: endpoint.x + (edge.x - endpoint.x) * offset, y1: endpoint.y + (edge.y - endpoint.y) * offset, x2: edge.x, y2: edge.y})) connector.setAttribute(key, value);
+  }
+  function renderInlineEditor() {
+    const b = selectedBond(), visible = Boolean(b && dismissedBond !== b.id);
+    inlineEditor.hidden = !visible; inlineLeader.hidden = !visible;
+    if (!visible) return;
+    const stage = svgs[state.chair].parentElement;
+    // Persistent native selects retain focus while a label change redraws the SVG.
+    if (inlineEditor.parentElement !== stage) stage.append(inlineLeader, inlineEditor);
+    setText($('#bond-label-heading'), `C${state.carbon + 1} · bond ${letter(currentBonds().indexOf(b))}`);
+    $('#inline-type-select').value = b.type; $('#inline-face-select').value = b.face;
+    inlineEditor.setAttribute('aria-label', `Chair ${state.chair + 1}, C${state.carbon + 1}, bond ${letter(currentBonds().indexOf(b))} labels`);
+    positionInlineEditor();
+  }
   function renderProgress() {
     const all = state.bonds.flat(2), labeled = all.filter(b => b.type && b.face).length;
     setText($('#overall-progress'), `${labeled} of 24 bonds labeled`); setText($('#drawn-progress'), `${all.length} drawn`); $('#completion-progress').value = labeled;
@@ -206,7 +266,7 @@
     setText($('#review-summary'), `${correct} of ${possible} checked bonds fully correct`);
     if (focused) container.querySelector(`[data-review="${focused}"]`)?.focus({preventScroll: true});
   }
-  function render() { svgs.forEach((_, chair) => draw(chair)); renderInspector(); renderProgress(); renderReview(); }
+  function render() { svgs.forEach((_, chair) => draw(chair)); renderInspector(); renderInlineEditor(); renderProgress(); renderReview(); }
   function check(chairs) {
     chairs.forEach(chair => { state.checked[chair] = true; });
     render();
@@ -231,7 +291,7 @@
         announce(`Chair ${chair + 1}, C${carbon + 1} selected. Drag outward, or tap an endpoint to draw a bond.`);
       } else if (bondTarget) {
         event.preventDefault(); choose(chair, Number(bondTarget.dataset.carbonIndex), bondTarget.dataset.bond);
-        announce(`Selected Chair ${chair + 1}, C${state.carbon + 1}, bond ${letter(currentBonds().findIndex(b => b.id === state.selected))}. Choose its labels below.`);
+        announce(`Selected Chair ${chair + 1}, C${state.carbon + 1}, bond ${letter(currentBonds().findIndex(b => b.id === state.selected))}. Choose its labels in the dropdowns beside the bond.`);
       } else if (armed?.chair === chair) {
         event.preventDefault(); const p = svgPoint(svg, event), c = core.chairs[chair].carbons[armed.carbon];
         addBond(chair, armed.carbon, p.x - c.x, p.y - c.y);
@@ -259,15 +319,21 @@
       if (target.hasAttribute('data-carbon')) {
         choose(chair, Number(target.dataset.carbon)); $('#keyboard-drawing').open = true; $('#bond-angle').focus();
         announce(`Chair ${chair + 1}, C${state.carbon + 1}. Set an angle and add a bond.`);
-      } else { choose(chair, Number(target.dataset.carbonIndex), target.dataset.bond); $('#type-select').focus(); }
+      } else { choose(chair, Number(target.dataset.carbonIndex), target.dataset.bond); $('#inline-type-select').focus({preventScroll: true}); }
     });
   });
   $('#chair-select').addEventListener('change', event => { const chair = Number(event.target.value); choose(chair, state.carbon, state.bonds[chair][state.carbon][0]?.id || ''); save(); });
   $('#carbon-select').addEventListener('change', event => { const carbon = Number(event.target.value); choose(state.chair, carbon, state.bonds[state.chair][carbon][0]?.id || ''); save(); });
-  $('#bond-select').addEventListener('change', event => { state.selected = event.target.value; syncAngle(); render(); });
-  for (const [id, prop] of [['type-select', 'type'], ['face-select', 'face']]) $(`#${id}`).addEventListener('change', event => {
+  $('#bond-select').addEventListener('change', event => { state.selected = event.target.value; dismissedBond = ''; syncAngle(); render(); });
+  for (const [id, prop] of [['type-select', 'type'], ['face-select', 'face'], ['inline-type-select', 'type'], ['inline-face-select', 'face']]) $(`#${id}`).addEventListener('change', event => {
     const b = selectedBond(); if (!b) return; remember(); b[prop] = event.target.value; save(); render();
   });
+  function closeInlineEditor() {
+    dismissedBond = state.selected; render();
+    svgs[state.chair].querySelector(`[data-bond="${state.selected}"]`)?.focus({preventScroll: true});
+  }
+  $('#close-bond-labels').addEventListener('click', closeInlineEditor);
+  inlineEditor.addEventListener('keydown', event => { if (event.key === 'Escape') { event.stopPropagation(); closeInlineEditor(); } });
   $('#delete-bond').addEventListener('click', () => {
     const b = selectedBond(); if (!b) return; remember();
     state.bonds[state.chair][state.carbon] = currentBonds().filter(bond => bond.id !== b.id);
@@ -300,5 +366,10 @@
     const b = selectedBond(), v = angleVector(); if (!b || !v) return; remember(); Object.assign(b, v); save(); render(); announce('Selected bond direction updated.');
   });
   mobileLayout.addEventListener('change', render);
+  if ('ResizeObserver' in window) {
+    const editorResizeObserver = new ResizeObserver(positionInlineEditor);
+    svgs.forEach(svg => editorResizeObserver.observe(svg.parentElement));
+    editorResizeObserver.observe(inlineEditor);
+  } else window.addEventListener('resize', positionInlineEditor);
   restore(); syncAngle(); render();
 })();
