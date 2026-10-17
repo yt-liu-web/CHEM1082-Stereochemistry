@@ -9,7 +9,7 @@ The conformation lab homepage (`index.html`) contains navigation links to five i
 - **Cyclohexane** (`cyclohexane.html`): chair flips, axial/equatorial and up/down labels, and a top/Haworth-style view.
 - **Cyclohexane chair drawing practice** (`chair-practice.html`): draw both bonds at C1–C6 in each chair, label axial/equatorial and up/down, and check the drawing and labels independently. Includes cis/trans 1-methyl-2-isopropylcyclohexane stability practice.
 
-The homepage also links to the separate configuration lab (`configuration.html`), which currently has no models.
+The homepage also links to the separate configuration lab (`configuration.html`), which opens **Molecules and mirror images** (`mirror-images.html`). This activity shows the original and mirror-image wedge–dash structures alongside their 3D models. The original model stays fixed while students drag the mirror model to test for overlap. Green highlights matching positions in 3D, and red highlights nonmatching positions. Students can also show a plane of symmetry when one exists.
 
 Each model links back to the conformation lab homepage and to the other models. In the CHClBr–CHClBr model, the initial arrangement matches the supplied drawing: both H atoms up, both Cl atoms toward the viewer, and both Br atoms behind. Rotating the C–C bond preserves the configuration.
 
@@ -35,7 +35,8 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 ## Included files
 
 - `index.html` — conformation lab navigation
-- `configuration.html` — configuration lab placeholder
+- `configuration.html` — configuration lab navigation
+- `mirror-images.html` — interactive molecule and mirror-image comparison, 3D overlap feedback, and optional symmetry planes
 - `newman.html` — CHClBr–CHClBr model
 - `bromobutane.html` — interactive 2-bromobutane model
 - `dibromoethane.html` — 1,2-dibromoethane Newman projection practice
@@ -53,3 +54,4 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 Open `chair-practice.html` from the conformation homepage or the cyclohexane explorer. Draw both outgoing bonds at each numbered carbon, select a bond, and assign axial/equatorial and up/down labels. Check either chair or both; the solution overlay leaves student work intact. Draw by dragging from a carbon or selecting a carbon and then an endpoint; Enter or Space selects a focused carbon or bond. Drawings are saved only in the current browser.
 
 The additional 1-methyl-2-isopropylcyclohexane question includes cis and trans cases because the name alone does not specify their relationship. For cis-1,2, the most stable chair places isopropyl equatorial and methyl axial. For trans-1,2, the most stable chair is diequatorial. See [OpenStax section 4.8](https://openstax.org/books/organic-chemistry/pages/4-8-conformations-of-disubstituted-cyclohexanes).
+
