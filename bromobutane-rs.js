@@ -67,8 +67,6 @@
     const dpr=Math.min(window.devicePixelRatio||1,2), w=rect.width,h=rect.height;
     if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
     const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
-    // Resolve CSS light-dark tokens via the element's computed colors.
-    const fg=getComputedStyle(document.body).color, background=getComputedStyle(document.body).backgroundColor;
     const dark=matchMedia('(prefers-color-scheme: dark)').matches;
     const scale=Math.min(w/5.7,69), cx=w/2, cy=h/2-5;
     const nodes=G.transformedGroups(model,state.q).map(g=>{const [x,y,z]=g.position, perspective=1/(1-z*.10);return {...g,x:cx+x*scale*perspective,y:cy-y*scale*perspective,z,r:(g.id==='h'?16:22)*perspective};});
@@ -106,33 +104,51 @@
       if(n.z>=0 && n.id!=='center')groupBond(n);
       sphere(n);
     }
-    const occupied=[];
-    for (const n of nodes) {
-      const dx=n.x-cx,dy=n.y-cy,len=Math.hypot(dx,dy), name=labels[n.id],rank=n.id==='h'?'4':state.ranks[n.id]||'?';
-      ctx.font='600 15px system-ui';const lw=ctx.measureText(name).width+42,lh=29;
-      let lx=n.x+(len>12?dx/len*40:45),ly=n.y+(len>12?dy/len*38:42);
-      lx=Math.max(lw/2+3,Math.min(w-lw/2-3,lx));ly=Math.max(20,Math.min(h-20,ly));
-      for(let tries=0;tries<7 && occupied.some(o=>Math.abs(o.x-lx)<(o.w+lw)/2+3 && Math.abs(o.y-ly)<31);tries++)ly=Math.max(20,Math.min(h-20,ly+(ly>cy?-32:32)));
-      occupied.push({x:lx,y:ly,w:lw});
-      bond(n.x,n.y,lx,ly,1,dark?'#92a2ad':'#8a9ba6',n.id==='h'&&away);
-      ctx.fillStyle=background;ctx.strokeStyle=dark?'#586b76':'#c1d0d9';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(lx-lw/2,ly-lh/2,lw,lh,6);ctx.fill();ctx.stroke();
-      ctx.font='600 15px system-ui';ctx.fillStyle=fg;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(name,lx-lw/2+8,ly);
-      ctx.beginPath();ctx.arc(lx+lw/2-14,ly,10,0,Math.PI*2);ctx.fillStyle=dark?'#334e5b':'#e5f0f5';ctx.fill();ctx.fillStyle=fg;ctx.textAlign='center';ctx.font='700 12px system-ui';ctx.fillText(rank,lx+lw/2-14,ly);
+    // Keep the native controls attached to their groups without covering other
+    // controls or spheres. Move existing nodes so keyboard focus stays intact.
+    const controls=nodes.map(n=>({n,el:card.atomLabels[n.id],w:card.atomLabels[n.id].offsetWidth,h:card.atomLabels[n.id].offsetHeight})).sort((a,b)=>b.w-a.w);
+    const occupied=[],obstacles=[...nodes,{x:cx,y:cy,r:20}];
+    const clamp=(x,min,max)=>Math.max(min,Math.min(max,x));
+    for(const item of controls){
+      const {n,el,w:lw,h:lh}=item,dx=n.x-cx,dy=n.y-cy;
+      const preferred=Math.hypot(dx,dy)>12?Math.atan2(dy,dx):Math.PI/4;
+      let best=null;
+      for(const extra of [0,22,44,66])for(let turn=0;turn<16;turn++){
+        const angle=preferred+turn*Math.PI/8,ux=Math.cos(angle),uy=Math.sin(angle);
+        const distance=n.r+9+Math.abs(ux)*lw/2+Math.abs(uy)*lh/2+extra;
+        const x=clamp(n.x+ux*distance,lw/2+8,w-lw/2-8),y=clamp(n.y+uy*distance,lh/2+8,h-lh/2-8);
+        const left=x-lw/2,right=x+lw/2,top=y-lh/2,bottom=y+lh/2;
+        let score=(x-n.x)**2+(y-n.y)**2+900*(1-Math.cos(angle-preferred));
+        for(const o of occupied){
+          const ox=Math.max(0,Math.min(right+5,o.right)-Math.max(left-5,o.left));
+          const oy=Math.max(0,Math.min(bottom+5,o.bottom)-Math.max(top-5,o.top));
+          score+=ox*oy*10000;
+        }
+        for(const o of obstacles){
+          const gap=Math.hypot(o.x-clamp(o.x,left,right),o.y-clamp(o.y,top,bottom));
+          score+=Math.max(0,o.r+5-gap)**2*150;
+        }
+        if(!best||score<best.score)best={x,y,left,right,top,bottom,score};
+      }
+      occupied.push(best);
+      el.style.left=`${best.left}px`;el.style.top=`${best.top}px`;
+      const ex=clamp(n.x,best.left,best.right),ey=clamp(n.y,best.top,best.bottom),length=Math.hypot(ex-n.x,ey-n.y);
+      if(length>n.r)bond(n.x+(ex-n.x)/length*n.r,n.y+(ey-n.y)/length*n.r,ex,ey,1.2,dark?'#92a2ad':'#8a9ba6',n.id==='h'&&away);
     }
   }
   G.models.forEach((model,i)=> {
     const letter=i===0?'A':'B',element=document.createElement('section');element.className='molecule';element.dataset.molecule=letter;element.setAttribute('aria-labelledby',`heading-${letter}`);
     element.innerHTML=`<div class="model-header"><h2 id="heading-${letter}">Molecule ${letter}</h2><span class="answer-tag"></span></div>
       <p class="drag-hint" id="hint-${letter}">Drag to rotate · arrow keys to turn · Shift + arrows to roll</p>
-      <canvas class="model-canvas" tabindex="0" aria-label="Rotate Molecule ${letter}" aria-describedby="hint-${letter}">Interactive tetrahedral model of 2-bromobutane.</canvas>
+      <div class="model-stage"><canvas class="model-canvas" tabindex="0" aria-label="Rotate Molecule ${letter}" aria-describedby="hint-${letter}">Interactive tetrahedral model of 2-bromobutane.</canvas>
+      <div class="atom-controls" role="group" aria-label="Molecule ${letter}: rank the groups, 1 is highest">
+      ${groups.map(id=>`<label class="atom-label" data-group="${id}" for="${letter}-${id}"><span>${labels[id]}</span><select id="${letter}-${id}" data-rank="${id}" aria-label="Molecule ${letter}: ${labels[id]} priority"><option value="">—</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>`).join('')}
+      <span class="atom-label hydrogen-label" data-group="h" aria-label="Hydrogen: priority 4, lowest"><span>H</span><span class="fixed-rank">4</span></span></div></div>
       <p class="orientation"></p><div class="view-buttons"><button type="button" data-action="flip">Flip molecule</button><button type="button" data-action="away">Point H away</button><button type="button" data-action="reset">Reset view</button></div>
-      <fieldset><legend>Rank the groups · 1 is highest</legend><div class="rank-list">
-      ${groups.map(id=>`<label for="${letter}-${id}"><span class="swatch" style="background:${model.groups.find(g=>g.id===id).color}"></span>${labels[id]} <small>${id==='ethyl'?'ethyl':id==='methyl'?'methyl':'bromine'}</small></label><select id="${letter}-${id}" data-rank="${id}" aria-label="Molecule ${letter}: ${labels[id]} priority"><option value="">—</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>`).join('')}
-      <span class="hydrogen-label"><span class="swatch" style="background:#f0f3f7"></span> H <small>hydrogen</small></span><span class="fixed-rank">4 (lowest)</span></div></fieldset>
       <div class="assignment"><label for="${letter}-answer">Configuration</label><select id="${letter}-answer" data-answer aria-label="Molecule ${letter}: configuration"><option value="">R or S?</option><option value="R">R</option><option value="S">S</option></select></div>
       <div class="actions"><button type="button" class="primary" data-action="check">Check answer</button><button type="button" data-action="reveal">Show answer</button></div><div class="feedback" aria-live="polite" aria-atomic="true"></div>`;
     grid.append(element);
-    const card={model,letter,element,state:restore(i),canvas:element.querySelector('canvas')};cards.push(card);
+    const card={model,letter,element,state:restore(i),canvas:element.querySelector('canvas'),atomLabels:Object.fromEntries(Array.from(element.querySelectorAll('[data-group]'),el=>[el.dataset.group,el]))};cards.push(card);
     element.addEventListener('change',e=>{if(e.target.matches('[data-rank]'))card.state.ranks[e.target.dataset.rank]=e.target.value;else if(e.target.matches('[data-answer]'))card.state.answer=e.target.value;else return;invalidate(card);draw(card);save();});
     element.addEventListener('click',e=>{
       const action=e.target.closest('[data-action]')?.dataset.action;if(!action)return;
