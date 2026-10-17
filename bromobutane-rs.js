@@ -3,23 +3,26 @@
   'use strict';
   const G = window.BromobutaneRS;
   const key = 'chem1082:bromobutane-rs:v1';
+  const stateVersion = 2;
   const grid = document.getElementById('molecule-grid');
   const labels = {br:'Br', ethyl:'CH₂CH₃', methyl:'CH₃', h:'H'};
   const groups = ['ethyl','br','methyl'];
-  const blank = () => ({q:G.identity(), ranks:{br:'',ethyl:'',methyl:''}, answer:'', checked:false, revealed:false});
+  const initialOrientation = model => model.id==='R' ? G.orientationWithHydrogenAway(model) : G.identity();
+  const blank = model => ({q:initialOrientation(model), ranks:{br:'',ethyl:'',methyl:''}, answer:'', checked:false, revealed:false});
   let saved;
   try { saved = JSON.parse(localStorage.getItem(key)); } catch { saved = null; }
   const cards = [];
   function restore(i) {
-    const s = saved?.version === 1 && saved.cards?.[i], state = blank();
+    const s = [1,stateVersion].includes(saved?.version) && saved.cards?.[i], state = blank(G.models[i]);
     if (!s || typeof s !== 'object') return state;
-    if (Array.isArray(s.q) && s.q.length === 4 && s.q.every(Number.isFinite) && Math.hypot(...s.q)>1e-9) state.q=G.normalize(s.q);
+    // Apply A's revised starting view once to older saved work; retain its answers.
+    if ((saved.version===stateVersion || i!==0) && Array.isArray(s.q) && s.q.length === 4 && s.q.every(Number.isFinite) && Math.hypot(...s.q)>1e-9) state.q=G.normalize(s.q);
     for (const id of groups) if (['','1','2','3'].includes(s.ranks?.[id])) state.ranks[id]=s.ranks[id];
     if (['','R','S'].includes(s.answer)) state.answer=s.answer;
     state.checked=s.checked===true; state.revealed=s.revealed===true;
     return state;
   }
-  function save() { try { localStorage.setItem(key,JSON.stringify({version:1,cards:cards.map(c=>c.state)})); } catch { /* Browsing without storage still supports the activity. */ } }
+  function save() { try { localStorage.setItem(key,JSON.stringify({version:stateVersion,cards:cards.map(c=>c.state)})); } catch { /* Browsing without storage still supports the activity. */ } }
   function invalidate(card) { card.state.checked=false;card.state.revealed=false; feedback(card); }
   function applyRotation(card,rotation) { card.state.q=G.multiply(rotation,card.state.q);draw(card);save(); }
   function feedback(card) {
@@ -135,7 +138,7 @@
       const action=e.target.closest('[data-action]')?.dataset.action;if(!action)return;
       if(action==='flip')applyRotation(card,G.flip('y'));
       if(action==='away'){card.state.q=G.orientationWithHydrogenAway(model);draw(card);save();}
-      if(action==='reset'){card.state.q=G.identity();draw(card);save();}
+      if(action==='reset'){card.state.q=initialOrientation(model);draw(card);save();}
       if(action==='check'){card.state.checked=true;card.state.revealed=false;feedback(card);draw(card);save();}
       if(action==='reveal'){for(const group of model.groups)if(group.id!=='h')card.state.ranks[group.id]=String(group.priority);card.state.answer=model.answer;card.state.revealed=true;card.state.checked=false;card.state.q=G.orientationWithHydrogenAway(model);sync(card);save();}
     });
@@ -148,5 +151,6 @@
     new ResizeObserver(()=>draw(card)).observe(card.canvas);sync(card);
   });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>cards.forEach(draw));
-  document.getElementById('start-again').addEventListener('click',()=>{for(const card of cards){card.state=blank();sync(card);}save();});
+  document.getElementById('start-again').addEventListener('click',()=>{for(const card of cards){card.state=blank(card.model);sync(card);}save();});
+  if(saved?.version===1)save();
 })();
