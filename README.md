@@ -11,7 +11,9 @@ The conformation lab homepage (`index.html`) contains navigation links to five i
 
 The homepage also links to the separate configuration lab (`configuration.html`), which opens **Molecules and mirror images** (`mirror-images.html`). This activity shows the original and mirror-image wedge–dash structures alongside their 3D models. The original model stays fixed while students drag the mirror model to test for overlap. Green highlights matching positions in 3D, and red highlights nonmatching positions. Students can also show a plane of symmetry when one exists.
 
-Each model links back to the conformation lab homepage and to the other models. In the CHClBr–CHClBr model, the initial arrangement matches the supplied drawing: both H atoms up, both Cl atoms toward the viewer, and both Br atoms behind. Rotating the C–C bond preserves the configuration.
+The configuration lab also includes **2-bromobutane: R or S?** (`bromobutane-rs.html`). Molecules A and B are the R and S enantiomers. Students independently rotate or flip each model, assign priorities 1–3 to Br, ethyl, and methyl (H is fixed at 4), then check their R/S assignments. The Point H away control provides the viewing direction for interpreting 1 → 2 → 3. Show answer explains the carbon tie-break. Rotations preserve configuration; answers and views are saved locally in the browser.
+
+Configuration activities link back to the configuration lab. In the CHClBr–CHClBr model, the initial arrangement matches the supplied drawing: both H atoms up, both Cl atoms toward the viewer, and both Br atoms behind. Rotating the C–C bond preserves the configuration.
 
 ## Publish with GitHub Pages
 
@@ -37,6 +39,8 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 - `index.html` — conformation lab navigation
 - `configuration.html` — configuration lab navigation
 - `mirror-images.html` — interactive molecule and mirror-image comparison, 3D overlap feedback, and optional symmetry planes
+- `bromobutane-rs.html`, `bromobutane-rs.css`, `bromobutane-rs.js` — R/S configuration and priority-ranking activity
+- `bromobutane-rs-core.js` — tetrahedral R/S geometry and rigid-rotation math
 - `newman.html` — CHClBr–CHClBr model
 - `bromobutane.html` — interactive 2-bromobutane model
 - `dibromoethane.html` — 1,2-dibromoethane Newman projection practice

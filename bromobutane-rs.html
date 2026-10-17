@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Rotate the R and S enantiomers of 2-bromobutane, rank the groups around C2, and practice assigning absolute configuration.">
+<title>2-bromobutane: R or S? · Configuration lab</title>
+<link rel="stylesheet" href="./bromobutane-rs.css">
+<script src="./bromobutane-rs-core.js" defer></script>
+<script src="./bromobutane-rs.js" defer></script>
+</head>
+<body>
+<nav class="lab-nav" aria-label="Configuration lab navigation">
+  <a href="./configuration.html">Configuration lab</a>
+  <a href="./mirror-images.html">Molecules and mirror images</a>
+  <a href="./bromobutane-rs.html" aria-current="page">2-bromobutane: R or S?</a>
+</nav>
+<main>
+<header class="intro">
+  <p class="course">CHEM 1082 · CONFIGURATION LAB</p>
+  <h1>2-bromobutane: <i>R</i> or <i>S</i>?</h1>
+  <p>One molecule is <i>R</i> and the other is <i>S</i>. Rotate each model, rank the groups attached to C2, and assign its configuration.</p>
+</header>
+<div class="instructions"><span class="step">1</span><span>Rank the groups <strong>1–3</strong>. H is already <strong>4</strong>.</span><span class="step">2</span><span>Turn H away and follow <strong>1 → 2 → 3</strong>.</span></div>
+<div class="molecule-grid" id="molecule-grid"></div>
+<section class="help" aria-label="Configuration help">
+  <details><summary>How do I decide R or S?</summary>
+    <p>With the lowest-priority group, H, pointing away from you, follow 1 → 2 → 3. Clockwise is <i>R</i>; counterclockwise is <i>S</i>. A flip rotates the entire model, so its configuration stays the same.</p>
+  </details>
+  <details><summary>How do I rank the groups?</summary>
+    <p>Start with the atom directly bonded to C2: a higher atomic number gives a higher priority. If two groups begin with the same atom, compare the atoms attached to those atoms, in decreasing atomic number, until you find a difference. Exclude the bond back to C2.</p>
+    <p><a href="https://openstax.org/books/organic-chemistry/pages/5-5-sequence-rules-for-specifying-configuration" target="_blank" rel="noopener noreferrer">Cahn–Ingold–Prelog sequence rules · OpenStax</a></p>
+  </details>
+</section>
+<footer><p>Idealized tetrahedral models. CH₃ and CH₂CH₃ represent condensed groups attached to the chiral carbon, C2. Your answers are saved in this browser.</p><button type="button" id="start-again">Start again</button></footer>
+<noscript><p>Enable JavaScript to rotate the molecules and check your answers.</p></noscript>
+</main>
+</body>
+</html>
