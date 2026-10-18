@@ -1813,6 +1813,10 @@ html&gt;body{padding:0}&lt;/style&gt;
     #molecule-mirror-lab .structure text { fill: var(--foreground); font-family: inherit; font-size: var(--font-size-base); }
     #molecule-mirror-lab .structure .bond { stroke: var(--foreground); stroke-width: 1.8; fill: none; }
     #molecule-mirror-lab .structure .wedge { fill: var(--foreground); }
+    #molecule-mirror-lab .structure .plane-area { fill: var(--viz-series-5); fill-opacity: .16; stroke: var(--viz-series-5); stroke-width: 1; stroke-dasharray: 4 3; }
+    #molecule-mirror-lab .structure .plane-band { stroke: var(--viz-series-5); stroke-opacity: .16; stroke-width: 14; }
+    #molecule-mirror-lab .structure .plane-trace { stroke: var(--viz-series-5); stroke-width: 1.8; stroke-dasharray: 5 4; }
+    #molecule-mirror-lab .structure-plane-note { text-align: center; }
     #molecule-mirror-lab .scene { display: block; width: 100%; height: 340px; touch-action: none; cursor: grab; }
     #molecule-mirror-lab .scene.dragging { cursor: grabbing; }
     #molecule-mirror-lab .small-note { margin-top: 8px; }
@@ -1838,10 +1842,12 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;div class=&quot;structure-panel&quot;&gt;
         &lt;div class=&quot;structure-title text-small&quot;&gt;Original wedge–dash&lt;/div&gt;
         &lt;svg class=&quot;structure structure-original&quot; viewBox=&quot;0 0 144 180&quot; role=&quot;img&quot; aria-label=&quot;Original wedge–dash structure&quot;&gt;&lt;/svg&gt;
+        &lt;div class=&quot;structure-plane-note text-small&quot; hidden&gt;&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;structure-panel&quot;&gt;
         &lt;div class=&quot;structure-title text-small&quot;&gt;Mirror wedge–dash&lt;/div&gt;
         &lt;svg class=&quot;structure structure-mirror&quot; viewBox=&quot;0 0 144 180&quot; role=&quot;img&quot; aria-label=&quot;Mirror-image wedge–dash structure&quot;&gt;&lt;/svg&gt;
+        &lt;div class=&quot;structure-plane-note text-small&quot; hidden&gt;&lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
     &lt;canvas class=&quot;scene&quot; role=&quot;img&quot; aria-label=&quot;Fixed original molecule and a mirror model you can drag to rotate.&quot;&gt;3D molecular comparison. The original is fixed. Drag the mirror model to rotate it.&lt;/canvas&gt;
@@ -1856,6 +1862,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;div class=&quot;viz-controls&quot;&gt;
     &lt;button class=&quot;btn btn-primary&quot; data-action=&quot;check&quot; type=&quot;button&quot;&gt;Check overlap&lt;/button&gt;
     &lt;button class=&quot;btn&quot; data-action=&quot;align&quot; type=&quot;button&quot;&gt;Reveal best alignment&lt;/button&gt;
+    &lt;button class=&quot;btn&quot; data-action=&quot;reset-mirror&quot; type=&quot;button&quot; data-tooltip=&quot;Restore the mirror model&#x27;s starting orientation and side-by-side position&quot;&gt;Recover to the initial position&lt;/button&gt;
   &lt;/div&gt;
   &lt;div class=&quot;result&quot; aria-live=&quot;polite&quot; aria-atomic=&quot;true&quot;&gt;&lt;span data-readout=&quot;result&quot;&gt;&lt;/span&gt;&lt;/div&gt;
   &lt;div class=&quot;text-small text-muted small-note&quot;&gt;Idealized geometry · flat cyclobutane rings · CH₃ groups shown as single units&lt;/div&gt;
@@ -2095,6 +2102,17 @@ html&gt;body{padding:0}&lt;/style&gt;
         const bond=(x1,y1,x2,y2)=&gt;line(x(x1),y1,x(x2),y2);
         const wedgeBond=(a,b,dashed)=&gt;wedge([x(a[0]),a[1]],[x(b[0]),b[1]],dashed);
         let markup=&#x27;&lt;title&gt;&#x27;+model.name+(reflected?&#x27; mirror-image&#x27;:&#x27; original&#x27;)+&#x27; wedge–dash structure&lt;/title&gt;&#x27;;
+        const planeDescription=!plane?&#x27;&#x27;:!model.planeNormal?&#x27;No plane of symmetry.&#x27;:model.id===&#x27;ch3f&#x27;?&#x27;Symmetry plane through C, F, and the upper H; reflection exchanges the other two H atoms.&#x27;:&#x27;Symmetry plane shown edge-on as a shaded dashed line.&#x27;;
+        if(plane &amp;&amp; model.planeNormal){
+          if(model.id===&#x27;ch3f&#x27;){
+            const points=[[85,8],[21,39],[21,145],[85,114]].map(([px,py])=&gt;x(px)+&#x27;,&#x27;+py).join(&#x27; &#x27;);
+            markup+=&#x27;&lt;g class=&quot;symmetry-plane&quot; data-plane-kind=&quot;oblique&quot; aria-hidden=&quot;true&quot;&gt;&lt;polygon class=&quot;plane-area&quot; points=&quot;&#x27;+points+&#x27;&quot;/&gt;&lt;/g&gt;&#x27;;
+          }else{
+            const [a,b]=model.id===&#x27;cis12&#x27;?[[72,24],[72,151]]:[[12,35],[132,155]];
+            const coordinates=&#x27; x1=&quot;&#x27;+x(a[0])+&#x27;&quot; y1=&quot;&#x27;+a[1]+&#x27;&quot; x2=&quot;&#x27;+x(b[0])+&#x27;&quot; y2=&quot;&#x27;+b[1]+&#x27;&quot;&#x27;;
+            markup+=&#x27;&lt;g class=&quot;symmetry-plane&quot; data-plane-kind=&quot;edge-on&quot; aria-hidden=&quot;true&quot;&gt;&lt;line class=&quot;plane-band&quot;&#x27;+coordinates+&#x27;/&gt;&lt;line class=&quot;plane-trace&quot;&#x27;+coordinates+&#x27;/&gt;&lt;/g&gt;&#x27;;
+          }
+        }
         const label=(text,px,y)=&gt;&#x27;&lt;text x=&quot;&#x27;+x(px)+&#x27;&quot; y=&quot;&#x27;+y+&#x27;&quot; text-anchor=&quot;middle&quot; dominant-baseline=&quot;middle&quot;&gt;&#x27;+text+&#x27;&lt;/text&gt;&#x27;;
         if(model.id===&#x27;original&#x27;||model.id===&#x27;ch3f&#x27;) {
           markup+=label(&#x27;C&#x27;,72,83)+bond(72,68,72,39)+label(&#x27;H&#x27;,72,27);
@@ -2108,7 +2126,10 @@ html&gt;body{padding:0}&lt;/style&gt;
           else markup+=wedgeBond([99,68],[126,38],model.id===&#x27;trans12&#x27;);
         }
         target.innerHTML=markup;
-        target.setAttribute(&#x27;aria-label&#x27;,model.name+(reflected?&#x27; mirror-image&#x27;:&#x27; original&#x27;)+&#x27;. Solid wedges point toward you; dashed wedges point away. Unlabeled outer endpoints are methyl groups.&#x27;);
+        target.setAttribute(&#x27;aria-label&#x27;,model.name+(reflected?&#x27; mirror-image&#x27;:&#x27; original&#x27;)+&#x27;. Solid wedges point toward you; dashed wedges point away.&#x27;+(model.planarRing?&#x27; Unlabeled outer endpoints are methyl groups.&#x27;:&#x27;&#x27;)+(planeDescription?&#x27; &#x27;+planeDescription:&#x27;&#x27;));
+        const note=target.nextElementSibling;
+        note.hidden=!plane;
+        note.textContent=!model.planeNormal?&#x27;No symmetry plane&#x27;:model.id===&#x27;ch3f&#x27;?&#x27;Plane through C, F, and upper H&#x27;:&#x27;Symmetry plane (edge-on)&#x27;;
       }
     }
     function resize() {
@@ -2257,7 +2278,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     }
     canvas.addEventListener(&#x27;pointerdown&#x27;,event=&gt;{
       if(event.button!==0)return;const p=location(event);const panel=panels.find(s=&gt;p[0]&gt;=s.x&amp;&amp;p[0]&lt;=s.x+s.w&amp;&amp;p[1]&gt;=s.y&amp;&amp;p[1]&lt;=s.y+s.h);
-      if(!panel||panel.kind===&#x27;original&#x27;)return;stopAnimation();drag={id:event.pointerId,p,panel};canvas.setPointerCapture(event.pointerId);canvas.style.cursor=&#x27;grabbing&#x27;;event.preventDefault();
+      if(!panel||panel.kind===&#x27;original&#x27;)return;stopAnimation();updateResult();drag={id:event.pointerId,p,panel};canvas.setPointerCapture(event.pointerId);canvas.style.cursor=&#x27;grabbing&#x27;;event.preventDefault();
     });
     canvas.addEventListener(&#x27;pointermove&#x27;,event=&gt;{
       if(!drag){const p=location(event);const panel=panels.find(s=&gt;p[0]&gt;=s.x&amp;&amp;p[0]&lt;=s.x+s.w&amp;&amp;p[1]&gt;=s.y&amp;&amp;p[1]&lt;=s.y+s.h);canvas.style.cursor=panel&amp;&amp;panel.kind===&#x27;original&#x27;?&#x27;default&#x27;:&#x27;grab&#x27;;return;}
@@ -2273,7 +2294,11 @@ html&gt;body{padding:0}&lt;/style&gt;
     canvas.addEventListener(&#x27;pointerup&#x27;,endDrag);canvas.addEventListener(&#x27;pointercancel&#x27;,endDrag);canvas.addEventListener(&#x27;lostpointercapture&#x27;,endDrag);
     select.addEventListener(&#x27;change&#x27;,()=&gt;{stopAnimation();model=models.find(m=&gt;m.id===select.value);view=startingView(model);q=startingRotation(view);reveal=false;sync();save();});
     el(&#x27;overlay&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{overlay=el(&#x27;overlay&#x27;).checked;resize();updateResult();save();});
-    el(&#x27;plane&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{plane=el(&#x27;plane&#x27;).checked;updateResult();draw();save();});
+    el(&#x27;plane&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{plane=el(&#x27;plane&#x27;).checked;drawStructure();updateResult();draw();save();});
+    root.querySelector(&#x27;[data-action=&quot;reset-mirror&quot;]&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
+      drag=null;canvas.style.cursor=&#x27;grab&#x27;;reveal=false;overlay=false;el(&#x27;overlay&#x27;).checked=false;updateResult();resize();
+      toRotation(startingRotation(view),()=&gt;{updateResult();draw();save();});
+    });
     root.querySelector(&#x27;[data-action=&quot;check&quot;]&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{stopAnimation();overlay=true;el(&#x27;overlay&#x27;).checked=true;resize();updateResult(&#x27;check&#x27;);save();});
     root.querySelector(&#x27;[data-action=&quot;align&quot;]&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
       if(!fitCache.has(model.id))fitCache.set(model.id,G.bestFit(model));
