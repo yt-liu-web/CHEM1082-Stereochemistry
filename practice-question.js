@@ -4,21 +4,10 @@
   const root = document.getElementById('substituent-practice');
   const core = window.ChairCore;
   if (!root || !core || !core.chairs) return;
-  const storageKey = 'chem1082-substituent-practice-1-2-v1';
   const blank = () => ({ cis: [{}, {}], trans: [{}, {}] });
   const state = { isomer: 'cis', chair: 0, carbon: 0, attempts: blank(), guides: false };
-  try {
-    const saved = JSON.parse(localStorage.getItem(storageKey));
-    if (saved && ['cis', 'trans'].includes(saved.isomer)) state.isomer = saved.isomer;
-    if (saved && [0, 1].includes(saved.chair)) state.chair = saved.chair;
-    if (saved && [0, 1].includes(saved.carbon)) state.carbon = saved.carbon;
-    for (const isomer of ['cis', 'trans']) for (const chair of [0, 1]) for (const carbon of [0, 1]) {
-      const bond = saved?.attempts?.[isomer]?.[chair]?.[carbon];
-      if (bond && Number.isFinite(bond.dx) && Number.isFinite(bond.dy) && Math.hypot(bond.dx, bond.dy) > 0) {
-        state.attempts[isomer][chair][carbon] = normalize(bond.dx, bond.dy);
-      }
-    }
-  } catch (_) { /* Private browsing may not allow storage. */ }
+  // Keep attempts in memory until this page is closed or reloaded.
+  try { localStorage.removeItem('chem1082-substituent-practice-1-2-v1'); } catch (_) { /* Storage may be unavailable. */ }
 
   root.innerHTML = `
     <div class="pr-heading"><p class="pr-eyebrow">Apply the chair flip</p><h2 id="pr-title">Draw the most stable conformation</h2></div>
@@ -53,7 +42,6 @@
   const chosen = () => state.attempts[state.isomer][state.chair];
   const geometry = () => core.chairs[state.chair];
   const groupName = carbon => carbon === 0 ? 'CH₃' : 'i-Pr';
-  const save = () => { try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (_) {} };
   function normalize(dx, dy) { const length = Math.hypot(dx, dy); return { dx: dx * 60 / length, dy: dy * 60 / length }; }
   function node(tag, attrs = {}, text) {
     const element = document.createElementNS(ns, tag);
@@ -141,7 +129,7 @@
     chosen()[carbon] = normalize(vector.dx, vector.dy);
     state.carbon = carbon;
     preview = null;
-    clearFeedback(); save(); render();
+    clearFeedback(); render();
   }
   function render() {
     const model = geometry();
@@ -284,7 +272,7 @@
     if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
     const position = point(event);
     if (active.moved && position) { const start = geometry().carbons[active.carbon]; putBond(active.carbon, { dx: position.x - start.x, dy: position.y - start.y }); }
-    else { preview = null; save(); render(); }
+    else { preview = null; render(); }
   });
   const cancelDrag = () => { drag = null; preview = null; render(); };
   svg.addEventListener('pointercancel', cancelDrag);
@@ -295,15 +283,15 @@
     } else if (event.key === 'Enter') { event.preventDefault(); putBond(state.carbon, preview || chosen()[state.carbon] || { dx: 0, dy: -60 }); }
     else if (event.key === 'Escape') { preview = null; render(); }
   });
-  root.querySelectorAll('[data-pr-isomer]').forEach(button => button.addEventListener('click', () => { state.isomer = button.dataset.prIsomer; preview = null; clearFeedback(); save(); render(); }));
-  root.querySelectorAll('[data-pr-chair]').forEach(button => button.addEventListener('click', () => { state.chair = Number(button.dataset.prChair); preview = null; clearFeedback(); save(); render(); }));
-  root.querySelectorAll('[data-pr-carbon]').forEach(button => button.addEventListener('click', () => { state.carbon = Number(button.dataset.prCarbon); preview = null; save(); render(); }));
+  root.querySelectorAll('[data-pr-isomer]').forEach(button => button.addEventListener('click', () => { state.isomer = button.dataset.prIsomer; preview = null; clearFeedback(); render(); }));
+  root.querySelectorAll('[data-pr-chair]').forEach(button => button.addEventListener('click', () => { state.chair = Number(button.dataset.prChair); preview = null; clearFeedback(); render(); }));
+  root.querySelectorAll('[data-pr-carbon]').forEach(button => button.addEventListener('click', () => { state.carbon = Number(button.dataset.prCarbon); preview = null; render(); }));
   root.querySelectorAll('[data-pr-direction]').forEach(button => button.addEventListener('click', () => { const bond = bondAt(state.carbon, button.dataset.prDirection); putBond(state.carbon, bond); }));
   root.querySelectorAll('[data-pr-rotate]').forEach(button => button.addEventListener('click', () => rotate(Number(button.dataset.prRotate))));
   $('#pr-commit').addEventListener('click', () => putBond(state.carbon, preview || chosen()[state.carbon] || { dx: 0, dy: -60 }));
   $('#pr-guides').addEventListener('change', event => { state.guides = event.target.checked; render(); });
-  $('#pr-erase').addEventListener('click', () => { delete chosen()[state.carbon]; preview = null; clearFeedback(); save(); render(); });
-  $('#pr-reset').addEventListener('click', () => { state.attempts[state.isomer][state.chair] = {}; preview = null; clearFeedback(); save(); render(); status('This drawing has been reset. Other chairs and cases are unchanged.'); });
+  $('#pr-erase').addEventListener('click', () => { delete chosen()[state.carbon]; preview = null; clearFeedback(); render(); });
+  $('#pr-reset').addEventListener('click', () => { state.attempts[state.isomer][state.chair] = {}; preview = null; clearFeedback(); render(); status('This drawing has been reset. Other chairs and cases are unchanged.'); });
   $('#pr-check').addEventListener('click', check);
   $('#pr-reveal').addEventListener('click', reveal);
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(render).observe(svg);

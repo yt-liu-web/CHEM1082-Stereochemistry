@@ -7,7 +7,6 @@
   const svgs = [$('#chair-0'), $('#chair-1')];
   const inlineEditor = $('#bond-label-editor'), inlineLeader = $('#bond-label-leader');
   const NS = 'http://www.w3.org/2000/svg';
-  const KEY = 'chem1082:chair-drawing:v1';
   const LENGTH = 60;
   const mobileLayout = window.matchMedia('(max-width: 680px)');
   const emptyBonds = () => [Array.from({length: 6}, () => []), Array.from({length: 6}, () => [])];
@@ -26,32 +25,8 @@
   };
   const line = (p, b, attrs = {}) => svgEl('line', {x1: p.x, y1: p.y, x2: p.x + b.dx, y2: p.y + b.dy, ...attrs});
   const announce = text => setText($('#drawing-status'), text);
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify({version: 1, bonds: state.bonds, chair: state.chair, carbon: state.carbon, nextId})); } catch (_) { /* Drawing remains usable when storage is unavailable. */ }
-  }
-  function restore() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-      if (saved?.version !== 1 || !Array.isArray(saved.bonds) || saved.bonds.length !== 2) return;
-      const restored = emptyBonds();
-      for (let chair = 0; chair < 2; chair++) {
-        if (!Array.isArray(saved.bonds[chair]) || saved.bonds[chair].length !== 6) return;
-        for (let carbon = 0; carbon < 6; carbon++) {
-          const bonds = saved.bonds[chair][carbon];
-          if (!Array.isArray(bonds)) return;
-          for (const b of bonds.slice(0, 2)) {
-            if (!b || !Number.isFinite(b.dx) || !Number.isFinite(b.dy) || Math.hypot(b.dx, b.dy) < 1) continue;
-            restored[chair][carbon].push({id: `b${nextId++}`, ...core.normalizeVector(b.dx, b.dy, LENGTH), type: ['axial', 'equatorial'].includes(b.type) ? b.type : '', face: ['up', 'down'].includes(b.face) ? b.face : ''});
-          }
-        }
-      }
-      state.bonds = restored;
-      state.chair = saved.chair === 1 ? 1 : 0;
-      state.carbon = Number.isInteger(saved.carbon) && saved.carbon >= 0 && saved.carbon < 6 ? saved.carbon : 0;
-      state.selected = currentBonds()[0]?.id || '';
-      if (state.bonds.flat(2).length) announce('Your saved drawings have been restored. Select a bond to continue.');
-    } catch (_) { /* Ignore malformed or unavailable local storage. */ }
-  }
+  // Work belongs to this open page only. Discard drawings saved by older versions.
+  try { localStorage.removeItem('chem1082:chair-drawing:v1'); } catch (_) { /* Storage may be unavailable. */ }
   function remember() {
     history.push(JSON.stringify({bonds: state.bonds, chair: state.chair, carbon: state.carbon, selected: state.selected}));
     if (history.length > 70) history.shift();
@@ -68,7 +43,7 @@
     const b = {id: `b${nextId++}`, ...core.normalizeVector(dx, dy, LENGTH), type: '', face: ''};
     state.bonds[chair][carbon].push(b);
     state.chair = chair; state.carbon = carbon; state.selected = b.id; armed = null; dismissedBond = '';
-    save(); render();
+    render();
     announce(`Bond ${letter(currentBonds().length - 1)} added at Chair ${chair + 1}, C${carbon + 1}. Choose its orientation and ring face in the dropdowns beside the bond.`);
     return true;
   }
@@ -309,7 +284,7 @@
     });
   });
   for (const [id, prop] of [['inline-type-select', 'type'], ['inline-face-select', 'face']]) $(`#${id}`).addEventListener('change', event => {
-    const b = selectedBond(); if (!b) return; remember(); b[prop] = event.target.value; save(); render();
+    const b = selectedBond(); if (!b) return; remember(); b[prop] = event.target.value; render();
   });
   function closeInlineEditor() {
     dismissedBond = state.selected; render();
@@ -320,15 +295,15 @@
   $('#delete-bond').addEventListener('click', () => {
     const b = selectedBond(); if (!b) return; remember();
     state.bonds[state.chair][state.carbon] = currentBonds().filter(bond => bond.id !== b.id);
-    state.selected = currentBonds()[0]?.id || ''; dismissedBond = ''; save(); render();
+    state.selected = currentBonds()[0]?.id || ''; dismissedBond = ''; render();
     if (!state.selected) svgs[state.chair].querySelector(`[data-carbon="${state.carbon}"]`)?.focus({preventScroll: true});
     announce(`Bond deleted from Chair ${state.chair + 1}, C${state.carbon + 1}.`);
   });
   $('#undo').addEventListener('click', () => {
-    if (!history.length) return; Object.assign(state, JSON.parse(history.pop())); armed = null; preview = null; save(); render(); announce('Last edit undone.');
+    if (!history.length) return; Object.assign(state, JSON.parse(history.pop())); armed = null; preview = null; render(); announce('Last edit undone.');
   });
   $('#reset').addEventListener('click', () => {
-    remember(); state.bonds = emptyBonds(); state.checked = [false, false]; state.selected = ''; armed = null; preview = null; state.solution = false; save(); render(); announce('Both drawings cleared. Use Undo to restore them.');
+    remember(); state.bonds = emptyBonds(); state.checked = [false, false]; state.selected = ''; armed = null; preview = null; state.solution = false; render(); announce('Both drawings cleared. Use Undo to restore them.');
   });
   $('#check-both').addEventListener('click', () => check([0, 1]));
   root.querySelectorAll('[data-check]').forEach(button => button.addEventListener('click', () => check([Number(button.dataset.check)])));
@@ -339,5 +314,10 @@
     svgs.forEach(svg => editorResizeObserver.observe(svg.parentElement));
     editorResizeObserver.observe(inlineEditor);
   } else window.addEventListener('resize', positionInlineEditor);
-  restore(); render();
+  // Back/Forward can revive a whole page from memory, including its answers.
+  // Reload that restored page so both exercises start fresh; tab switches are unaffected.
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) window.location.reload();
+  });
+  render();
 })();
