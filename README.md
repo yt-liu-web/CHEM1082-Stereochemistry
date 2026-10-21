@@ -15,6 +15,8 @@ The configuration lab also includes **2-bromobutane: R or S?** (`bromobutane-rs.
 
 Configuration activities link back to the configuration lab. In the CHClBr–CHClBr model, the initial arrangement matches the supplied drawing: both H atoms up, both Cl atoms toward the viewer, and both Br atoms behind. Rotating the C–C bond preserves the configuration.
 
+**cis/trans: dimethylcyclopentane** (`dimethylcyclopentane.html`) compares trans- and cis-1,2-dimethylcyclopentane side by side, with corresponding wedge–dash line structures. Students can rotate each 3D model and choose a C1–CH₃ or C2–CH₃ bond to rotate. Only the methyl hydrogens turn around that bond axis; the methyl carbon stays on its original ring face, so the configuration is unchanged. The ordered **Break → Switch → Form** controls remove the C2–CH₃ and C2–H bonds, exchange those groups, and restore the bonds to invert one ring stereocenter. The line structures update with the model. This is a conceptual stereochemistry operation, not a reaction mechanism; the ring geometry is an idealized teaching model.
+
 ## Publish with GitHub Pages
 
 1. Upload all files in this folder to the root of the repository's `main` branch. Keep the HTML, JavaScript, CSS, and PDF files together.
@@ -41,6 +43,8 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 - `mirror-images.html` — interactive molecule and mirror-image comparison, 3D overlap feedback, and optional symmetry planes
 - `bromobutane-rs.html`, `bromobutane-rs.css`, `bromobutane-rs.js` — R/S configuration and priority-ranking activity
 - `bromobutane-rs-core.js` — tetrahedral R/S geometry and rigid-rotation math
+- `dimethylcyclopentane.html`, `dimethylcyclopentane.css`, `dimethylcyclopentane.js` — cis/trans comparison, matching wedge–dash structures, methyl rotation, and break/switch/form activity
+- `dimethylcyclopentane-core.js` — molecular geometry, methyl torsion, and ordered configuration-change state
 - `newman.html` — CHClBr–CHClBr model
 - `bromobutane.html` — interactive 2-bromobutane model
 - `dibromoethane.html` — 1,2-dibromoethane Newman projection practice
@@ -58,4 +62,5 @@ Rear bonds start at the rear-carbon circle and are slightly offset in eclipsed p
 Open `chair-practice.html` from the conformation homepage or the cyclohexane explorer. Draw both outgoing bonds at each numbered carbon, select a bond, and assign axial/equatorial and up/down labels. Check either chair or both; the solution overlay leaves student work intact. Draw by dragging from a carbon or selecting a carbon and then an endpoint; Enter or Space selects a focused carbon or bond. Drawings and the additional stability-practice attempts stay in memory only while the page is open. Closing, leaving, or reloading the page starts both exercises fresh; switching browser tabs preserves work. Older saved attempts are removed automatically.
 
 The additional 1-methyl-2-isopropylcyclohexane question includes cis and trans cases because the name alone does not specify their relationship. For cis-1,2, the most stable chair places isopropyl equatorial and methyl axial. For trans-1,2, the most stable chair is diequatorial. See [OpenStax section 4.8](https://openstax.org/books/organic-chemistry/pages/4-8-conformations-of-disubstituted-cyclohexanes).
+
 
