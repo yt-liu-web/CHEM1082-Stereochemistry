@@ -71,6 +71,10 @@
     const {state}=card,busy=!!card.motion,bonded=state.stage==='bonded';
     const switched=state.stage==='switched',face2=(state.configuration==='cis')!==switched?'+':'−';
     card.element.dataset.configuration=state.configuration;card.element.dataset.stage=state.stage;
+    const description=bonded?`${cap(state.configuration)}-1,2-dimethylcyclopentane. The methyl groups are on ${state.configuration==='cis'?'the same face':'opposite faces'} of the ring.`:`C2 attachment bonds are broken. CH₃ and H are ${switched?'exchanged and still detached':'detached and ready to exchange'}.`;
+    card.canvas.textContent=description;
+    card.canvas.setAttribute('aria-label',`Interactive 3D model of Molecule ${card.element.dataset.molecule}. ${description}`);
+    by(card,'.angle').setAttribute('aria-live','off');
     by(card,'.model-name').textContent=bonded?`${cap(state.configuration)}-1,2-dimethylcyclopentane`:'C2 bonds detached';
     by(card,'.relationship').textContent=bonded?(state.configuration==='trans'?'Opposite faces · trans':'Same face · cis'):(switched?'CH₃ and H exchanged':'Ready to exchange CH₃ and H');
     by(card,'.face2-value').textContent=`C2 methyl: face ${face2}${bonded?'':' (detached)'}`;
