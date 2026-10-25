@@ -3,20 +3,22 @@
   'use strict';
   const G = window.BromobutaneRS;
   const key = 'chem1082:bromobutane-rs:v1';
-  const stateVersion = 2;
+  const stateVersion = 3;
   const grid = document.getElementById('molecule-grid');
   const labels = {br:'Br', ethyl:'CH₂CH₃', methyl:'CH₃', h:'H'};
   const groups = ['ethyl','br','methyl'];
-  const initialOrientation = model => model.id==='R' ? G.orientationWithHydrogenAway(model) : G.identity();
+  const initialOrientation = model => model.id==='R'
+    ? G.orientationWithHydrogenAway(model)
+    : G.multiply(G.axisAngle([1,0,0],82*Math.PI/180),G.flip('z'));
   const blank = model => ({q:initialOrientation(model), ranks:{br:'',ethyl:'',methyl:''}, answer:'', checked:false, revealed:false});
   let saved;
   try { saved = JSON.parse(localStorage.getItem(key)); } catch { saved = null; }
   const cards = [];
   function restore(i) {
-    const s = [1,stateVersion].includes(saved?.version) && saved.cards?.[i], state = blank(G.models[i]);
+    const s = [1,2,stateVersion].includes(saved?.version) && saved.cards?.[i], state = blank(G.models[i]);
     if (!s || typeof s !== 'object') return state;
-    // Apply A's revised starting view once to older saved work; retain its answers.
-    if ((saved.version===stateVersion || i!==0) && Array.isArray(s.q) && s.q.length === 4 && s.q.every(Number.isFinite) && Math.hypot(...s.q)>1e-9) state.q=G.normalize(s.q);
+    // Apply revised starting views once while retaining answers and newer saved rotations.
+    if ((saved.version===stateVersion || (saved.version===2 && i===0)) && Array.isArray(s.q) && s.q.length === 4 && s.q.every(Number.isFinite) && Math.hypot(...s.q)>1e-9) state.q=G.normalize(s.q);
     for (const id of groups) if (['','1','2','3'].includes(s.ranks?.[id])) state.ranks[id]=s.ranks[id];
     if (['','R','S'].includes(s.answer)) state.answer=s.answer;
     state.checked=s.checked===true; state.revealed=s.revealed===true;
@@ -168,5 +170,5 @@
   });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>cards.forEach(draw));
   document.getElementById('start-again').addEventListener('click',()=>{for(const card of cards){card.state=blank(card.model);sync(card);}save();});
-  if(saved?.version===1)save();
+  if([1,2].includes(saved?.version))save();
 })();
