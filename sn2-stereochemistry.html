@@ -1942,8 +1942,8 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;div class=&quot;sn2-panes&quot;&gt;
     &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;3D model&lt;/h3&gt;&lt;div class=&quot;text-small text-muted&quot;&gt;Drag to rotate · substituted ring C stays fixed&lt;/div&gt;&lt;svg class=&quot;sn2-molecule&quot; role=&quot;img&quot; aria-label=&quot;3D SN2 model rotating about the fixed substituted benzene carbon. Methyl is shown as one CH3 ball.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
     &lt;div class=&quot;sn2-structures&quot; aria-label=&quot;Fixed before and after line structures&quot;&gt;
-      &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;Before attack&lt;/h3&gt;&lt;svg id=&quot;sn2-before&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;Before attack: C–Cl on the left solid wedge and C–H on the right hashed wedge; methyl upper-left and benzene upper-right.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
-      &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;After attack&lt;/h3&gt;&lt;svg id=&quot;sn2-after&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;After attack: C–H on the left solid wedge and C–I on the right hashed wedge; the same methyl and benzene skeleton shows inversion.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;Before attack&lt;/h3&gt;&lt;svg id=&quot;sn2-before&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;Before attack: benzene on the left and methyl below-right; C–Cl on the upper-left solid wedge and C–H on the upper-right hashed wedge.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;After attack&lt;/h3&gt;&lt;svg id=&quot;sn2-after&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;After attack: benzene on the left and methyl below-right; C–H on the upper-left solid wedge and C–I on the upper-right hashed wedge, showing inversion.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
   &lt;div class=&quot;sn2-legend text-small&quot; aria-label=&quot;Bond notation legend&quot;&gt;
@@ -2101,17 +2101,16 @@ html&gt;body{padding:0}&lt;/style&gt;
       svg.replaceChildren();
       const box=svg.getBoundingClientRect(),w=Math.max(180,box.width),h=box.height||185;
       svg.setAttribute(&#x27;viewBox&#x27;,&#x27;0 0 &#x27;+w+&#x27; &#x27;+h);
-      const center=[w*.43,h*.56],ringCenter=[center[0]+74,center[1]-40],radius=Math.min(29,(w-30)/6);
-      const ringAngle=Math.atan2(center[1]-ringCenter[1],center[0]-ringCenter[0]);
-      const vertices=Array.from({length:6},(_,i)=&gt;[ringCenter[0]+radius*Math.cos(ringAngle+i*Math.PI/3),ringCenter[1]+radius*Math.sin(ringAngle+i*Math.PI/3)]);
+      const center=[w*.60,h*.57],ringCenter=[center[0]-74,center[1]],radius=Math.min(29,(w-30)/6);
+      const vertices=Array.from({length:6},(_,i)=&gt;[ringCenter[0]+radius*Math.cos(i*Math.PI/3),ringCenter[1]+radius*Math.sin(i*Math.PI/3)]);
       for(let i=0;i&lt;6;i++){
         line(svg,vertices[i],vertices[(i+1)%6]);
         if(i%2===0){const a=vertices[i].map((v,k)=&gt;ringCenter[k]+.75*(v-ringCenter[k])),b=vertices[(i+1)%6].map((v,k)=&gt;ringCenter[k]+.75*(v-ringCenter[k]));line(svg,a,b);}
       }
-      line(svg,vertices[0],[center[0]-11*Math.cos(ringAngle),center[1]-11*Math.sin(ringAngle)]);
-      // Keep the solid wedge on the left and the hashed wedge on the right.
-      // CH3 upper-left / Ph upper-right preserves the approved configurations.
-      const methyl=[center[0]-42,center[1]-40],left=[center[0]-42,center[1]+45],right=[center[0]+42,center[1]+45];
+      line(svg,vertices[0],[center[0]-11,center[1]]);
+      // Preserve the earlier Ph-left / CH3-below layout and both configurations.
+      // Of the two upper bonds, the solid wedge is left of the hashed wedge.
+      const methyl=[center[0]+40,center[1]+48],left=[center[0]-27,center[1]-56],right=[center[0]+42,center[1]-50];
       const halogen=product?right:left,hydrogen=product?left:right;
       wedge(svg,center,methyl,0,&#x27;var(--foreground)&#x27;);
       const halogenBond=el(&#x27;g&#x27;,{&#x27;data-static-bond&#x27;:&#x27;halogen&#x27;,&#x27;data-stereo&#x27;:product?&#x27;dash&#x27;:&#x27;wedge&#x27;});
