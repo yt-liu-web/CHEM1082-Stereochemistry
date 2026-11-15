@@ -110,7 +110,7 @@
   --red: light-dark(rgb(224 46 42), rgb(255 103 100));
   --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
   --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
-  --viz-series-1: light-dark(rgb(51 156 255), rgb(131 195 255));
+  --viz-series-1: var(--primary);
   --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
   --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
   --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
@@ -1685,66 +1685,20 @@ html&gt;body{padding:0}&lt;/style&gt;
       postToHost(&quot;widget-state-write&quot;, { id, state: serializedState });
     });
   };
-  const bindingElement = document.getElementById(&quot;codex-visualization-bindings&quot;);
   const mockElement = document.getElementById(&quot;codex-connector-mocks&quot;);
-  const fileElement = document.getElementById(&quot;codex-preview-files&quot;);
   const connectorGlobals = {};
-  if (bindingElement != null || mockElement != null || fileElement != null) {
-    const bindings = parse(bindingElement?.textContent ?? &quot;{}&quot;);
-    bindingElement?.remove();
-    const values = new Map();
-    for (const [name, binding] of Object.entries(bindings)) {
-      if (binding.type === &quot;json&quot;) values.set(name, structuredClone(binding.value));
-    }
-    const pending = [bindings];
-    while (pending.length) {
-      const object = pending.pop();
-      Object.freeze(object);
-      for (const child of Object.values(object)) {
-        if (child !== null &amp;&amp; typeof child === &quot;object&quot;) pending.push(child);
-      }
-    }
-    const updates = [];
-    if (mockElement != null) {
-      const mocks = Object.entries(parse(mockElement.textContent));
-      mockElement.remove();
-      for (const [name, value] of mocks) {
-        values.set(name, value);
-        updates.push({ name, revision: 1, state: &quot;ready&quot;, value: { type: &quot;json&quot;, value } });
-      }
-    }
-    if (fileElement != null) {
-      const files = parse(fileElement.textContent);
-      fileElement.remove();
-      const blobs = new Map();
-      const urls = [];
-      for (const [name, binding] of Object.entries(bindings)) {
-        if (binding.type !== &quot;file&quot; || !hasOwn(files, binding.path)) continue;
-        const file = files[binding.path];
-        let blob = blobs.get(binding.path);
-        if (blob == null) {
-          const bytes = Uint8Array.fromBase64?.(file.base64) ??
-            Uint8Array.from(atob(file.base64), (char) =&gt; char.charCodeAt(0));
-          blob = new Blob([bytes], { type: file.mimeType });
-          blobs.set(binding.path, blob);
-        }
-        const url = URL.createObjectURL(blob);
-        urls.push(url);
-        values.set(name, { name: file.name, blob, url });
-        updates.push({ name, revision: 1, state: &quot;ready&quot;, value: { type: &quot;file&quot;, ...file } });
-      }
-      globalThis.addEventListener(&quot;pagehide&quot;, (event) =&gt; {
-        // A persisted pagehide can restore this same document and its subscriptions.
-        if (event.persisted) return;
-        for (const url of urls) URL.revokeObjectURL(url);
-        urls.length = 0;
-      });
-    }
-    if (mockElement != null || fileElement != null) connectorGlobals.visualizationData = { updates };
+  if (mockElement != null) {
+    const values = new Map(Object.entries(parse(mockElement.textContent)));
+    mockElement.remove();
+    connectorGlobals.visualizationData = {
+      updates: Array.from(values, ([name, value]) =&gt; ({
+        name,
+        revision: 1,
+        state: &quot;ready&quot;,
+        value: { type: &quot;json&quot;, value },
+      })),
+    };
     connectorGlobals.visualization = {
-      get bindings() {
-        return bindings;
-      },
       /** @param {string} name @param {(value: unknown) =&gt; void} callback */
       onData(name, callback) {
         if (typeof callback !== &quot;function&quot;) {
@@ -1756,7 +1710,7 @@ html&gt;body{padding:0}&lt;/style&gt;
           // oxlint-disable-next-line no-console -- Keep authored callback failures local.
           console.error(&quot;Live visualization data callback failed&quot;, error);
         }
-        // A static preview delivers the current value once per subscription.
+        // A static preview delivers the current fixture once per subscription.
         return () =&gt; {};
       },
     };
@@ -1935,12 +1889,12 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;/div&gt;
   &lt;div class=&quot;viz-controls&quot;&gt;
     &lt;label class=&quot;form-label&quot; for=&quot;sn2-view&quot;&gt;View
-    &lt;select class=&quot;form-select&quot; id=&quot;sn2-view&quot; aria-label=&quot;View&quot;&gt;&lt;option value=&quot;depth&quot;&gt;Default view&lt;/option&gt;&lt;option value=&quot;textbook&quot;&gt;Textbook side view&lt;/option&gt;&lt;option value=&quot;custom&quot; disabled&gt;Free rotation&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
+    &lt;select class=&quot;form-select&quot; id=&quot;sn2-view&quot; aria-label=&quot;View&quot;&gt;&lt;option value=&quot;depth&quot;&gt;Default view&lt;/option&gt;&lt;option value=&quot;textbook&quot;&gt;Side view (90°)&lt;/option&gt;&lt;option value=&quot;custom&quot; disabled&gt;Rotated view&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
     &lt;button class=&quot;btn&quot; type=&quot;button&quot; id=&quot;sn2-turn&quot;&gt;Turn over 180°&lt;/button&gt;
     &lt;label class=&quot;form-check&quot;&gt;&lt;input class=&quot;form-check-input&quot; id=&quot;sn2-canopy&quot; type=&quot;checkbox&quot; checked&gt;&lt;span class=&quot;form-check-label&quot;&gt;Benzene plane&lt;/span&gt;&lt;/label&gt;
   &lt;/div&gt;
   &lt;div class=&quot;sn2-panes&quot;&gt;
-    &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;3D model&lt;/h3&gt;&lt;div class=&quot;text-small text-muted&quot;&gt;Drag to rotate · substituted ring C stays fixed&lt;/div&gt;&lt;svg class=&quot;sn2-molecule&quot; role=&quot;img&quot; aria-label=&quot;3D SN2 model rotating about the fixed substituted benzene carbon. Methyl is shown as one CH3 ball.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+    &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;3D model&lt;/h3&gt;&lt;div class=&quot;text-small text-muted&quot;&gt;Drag horizontally · vertical axis in the benzene plane&lt;/div&gt;&lt;svg class=&quot;sn2-molecule&quot; role=&quot;img&quot; aria-label=&quot;3D SN2 model rotating only around a vertical axis in the benzene plane through the fixed substituted ring carbon. Methyl is shown as one CH3 ball.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
     &lt;div class=&quot;sn2-structures&quot; aria-label=&quot;Fixed before and after line structures&quot;&gt;
       &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;Before attack&lt;/h3&gt;&lt;svg id=&quot;sn2-before&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;Before attack: benzene on the left and methyl below-right; C–Cl on the upper-left solid wedge and C–H on the upper-right hashed wedge.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
       &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;After attack&lt;/h3&gt;&lt;svg id=&quot;sn2-after&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;After attack: benzene on the left and methyl below-right; C–H on the upper-left solid wedge and C–I on the upper-right hashed wedge, showing inversion.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
@@ -1952,7 +1906,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     &lt;span class=&quot;sn2-key&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; viewBox=&quot;0 0 30 18&quot;&gt;&lt;path d=&quot;M2 9H28&quot; stroke=&quot;currentColor&quot; fill=&quot;none&quot; stroke-width=&quot;2&quot; stroke-dasharray=&quot;2 4&quot;/&gt;&lt;/svg&gt;Partial bond&lt;/span&gt;
   &lt;/div&gt;
   &lt;div id=&quot;sn2-detail&quot; class=&quot;text-small&quot; aria-live=&quot;polite&quot;&gt;Reactant · I⁻ approaches opposite the C–Cl bond.&lt;/div&gt;
-  &lt;details class=&quot;sn2-cam&quot;&gt;&lt;summary class=&quot;text-small&quot;&gt;Keyboard rotation&lt;/summary&gt;&lt;div class=&quot;sn2-controls&quot;&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-rotate=&quot;left&quot;&gt;Rotate left&lt;/button&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-rotate=&quot;right&quot;&gt;Rotate right&lt;/button&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-rotate=&quot;up&quot;&gt;Rotate up&lt;/button&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-rotate=&quot;down&quot;&gt;Rotate down&lt;/button&gt;&lt;/div&gt;&lt;/details&gt;
+  &lt;details class=&quot;sn2-cam&quot;&gt;&lt;summary class=&quot;text-small&quot;&gt;Keyboard rotation&lt;/summary&gt;&lt;div class=&quot;sn2-controls&quot;&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-rotate=&quot;left&quot;&gt;Rotate left&lt;/button&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-rotate=&quot;right&quot;&gt;Rotate right&lt;/button&gt;&lt;/div&gt;&lt;/details&gt;
   &lt;div class=&quot;text-small text-muted&quot;&gt;Schematic sphere sizes · CH₃ represents a group · ring and methyl hydrogens omitted&lt;/div&gt;
   &lt;script&gt;
   (() =&gt; {
@@ -1985,7 +1939,9 @@ html&gt;body{padding:0}&lt;/style&gt;
       // No camera tilt, so the complete benzene plane is parallel to the screen.
       return faceOn;
     };
-    const sideView=()=&gt;[0,0,0,1];
+    // The default view maps the ring&#x27;s transverse axis to screen vertical.
+    // Yaw preserves that same axis within the benzene plane at every reaction stage.
+    const axisView=angle=&gt;compose(axisAngle([0,1,0],angle),depthView());
     const bondKind=z=&gt;z&gt;.27?&#x27;wedge&#x27;:z&lt;-.27?&#x27;hash&#x27;:&#x27;line&#x27;;
     function geometry(t){
       const a=(2*t-1)/3,b=Math.sqrt(1-a*a);
@@ -2031,9 +1987,10 @@ html&gt;body{padding:0}&lt;/style&gt;
     const $=s=&gt;root.querySelector(s),$$=s=&gt;Array.from(root.querySelectorAll(s));
     const svg3=$(&#x27;.sn2-molecule&#x27;),beforeSvg=$(&#x27;#sn2-before&#x27;),afterSvg=$(&#x27;#sn2-after&#x27;),range=$(&#x27;#sn2-reaction&#x27;);
     const NS=&#x27;http://www.w3.org/2000/svg&#x27;;
-    const VIEW_VERSION=7;
-    let progress=0,q=depthView(),canopy=true,frame=null,playing=false,startTime=0,startAt=0;
+    const VIEW_VERSION=8;
+    let progress=0,yaw=0,q=axisView(0),canopy=true,frame=null,playing=false,startTime=0,startAt=0;
     let requestDraw=null,lastDrag=null;
+    function setRotation(angle){yaw=Math.atan2(Math.sin(angle),Math.cos(angle));q=axisView(yaw);}
     const el=(name,attrs={},text)=&gt;{const e=document.createElementNS(NS,name);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));if(text!==undefined)e.textContent=text;return e;};
     const color=kind=&gt;kind===&#x27;iodine&#x27;?&#x27;var(--viz-series-1)&#x27;:kind===&#x27;chlorine&#x27;?&#x27;var(--viz-series-2)&#x27;:&#x27;var(--foreground)&#x27;;
     function line(parent,a,b,attrs={}){parent.append(el(&#x27;line&#x27;,Object.assign({x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:2,&#x27;stroke-linecap&#x27;:&#x27;round&#x27;},attrs)));}
@@ -2082,8 +2039,6 @@ html&gt;body{padding:0}&lt;/style&gt;
         objects.push({z:atom.v[2],node:g});
       }
       objects.sort((a,b)=&gt;a.z-b.z).forEach(o=&gt;svg3.append(o.node));
-      const ringLabel=screen(view(model.ringCenter),f.cx,f.cy,f.scale);
-      text(svg3,ringLabel,&#x27;C₆H₅&#x27;,{&#x27;data-label&#x27;:&#x27;benzene-center&#x27;,&#x27;paint-order&#x27;:&#x27;stroke&#x27;,stroke:&#x27;var(--background)&#x27;,&#x27;stroke-width&#x27;:3,&#x27;stroke-linejoin&#x27;:&#x27;round&#x27;});
       if(progress===50){const c=nodes.get(&#x27;C&#x27;).s;text(svg3,[c[0]+18,c[1]-24],&#x27;‡&#x27;);}
       // Keep the iodine label inside its sphere, clear of bonds crossing its center.
       // Draw the annotation last so foreground geometry cannot obscure the symbol.
@@ -2136,20 +2091,17 @@ html&gt;body{padding:0}&lt;/style&gt;
       schedule();
     }
     function save(){
-      if(window.openai&amp;&amp;typeof window.openai.setWidgetState===&#x27;function&#x27;)window.openai.setWidgetState({modelContent:{example:&#x27;SN2 of Ph–CH(Cl)–CH3 with iodide&#x27;,progress,stage:$(&#x27;#sn2-stage&#x27;).textContent,rotationPivot:&#x27;Substituted benzene carbon&#x27;},privateContent:{q,canopy,view:$(&#x27;#sn2-view&#x27;).value,viewVersion:VIEW_VERSION}}).catch(()=&gt;{});
+      if(window.openai&amp;&amp;typeof window.openai.setWidgetState===&#x27;function&#x27;)window.openai.setWidgetState({modelContent:{example:&#x27;SN2 of Ph–CH(Cl)–CH3 with iodide&#x27;,progress,stage:$(&#x27;#sn2-stage&#x27;).textContent,rotationPivot:&#x27;Substituted benzene carbon&#x27;,rotationAxis:&#x27;Vertical axis in the benzene plane&#x27;},privateContent:{yaw,canopy,view:$(&#x27;#sn2-view&#x27;).value,viewVersion:VIEW_VERSION}}).catch(()=&gt;{});
     }
     function restore(state){
       if(!state||typeof state!==&#x27;object&#x27;)return;
       const m=state.modelContent||{},p=state.privateContent||{};
-      // Restore the approved starting scene instead of an older saved rotation/stage.
-      if(p.viewVersion!==VIEW_VERSION){
-        progress=0;q=depthView();canopy=true;$(&#x27;#sn2-view&#x27;).value=&#x27;depth&#x27;;updateUI(true);return;
-      }
       if(Number.isFinite(m.progress))progress=clamp(Math.round(m.progress),0,100);
-      let savedView=[&#x27;depth&#x27;,&#x27;textbook&#x27;,&#x27;custom&#x27;].includes(p.view)?p.view:&#x27;depth&#x27;;
-      if(savedView===&#x27;custom&#x27;&amp;&amp;Array.isArray(p.q)&amp;&amp;p.q.length===4&amp;&amp;p.q.every(Number.isFinite)&amp;&amp;Math.hypot(...p.q)&gt;.001)q=quat(p.q);
-      else{if(savedView===&#x27;custom&#x27;)savedView=&#x27;depth&#x27;;q=savedView===&#x27;textbook&#x27;?sideView():depthView();}
       if(typeof p.canopy===&#x27;boolean&#x27;)canopy=p.canopy;
+      // Older free-rotation quaternions cannot override the single-axis constraint.
+      let savedView=p.viewVersion===VIEW_VERSION&amp;&amp;[&#x27;depth&#x27;,&#x27;textbook&#x27;,&#x27;custom&#x27;].includes(p.view)?p.view:&#x27;depth&#x27;;
+      if(savedView===&#x27;custom&#x27;&amp;&amp;!Number.isFinite(p.yaw))savedView=&#x27;depth&#x27;;
+      setRotation(savedView===&#x27;textbook&#x27;?Math.PI/2:savedView===&#x27;custom&#x27;?p.yaw:0);
       $(&#x27;#sn2-view&#x27;).value=savedView;updateUI(true);
     }
     function stop(){playing=false;if(frame!==null)cancelAnimationFrame(frame);frame=null;$(&#x27;#sn2-play&#x27;).textContent=&#x27;Play inversion&#x27;;}
@@ -2165,13 +2117,13 @@ html&gt;body{padding:0}&lt;/style&gt;
       const tick=now=&gt;{if(!playing)return;progress=Math.min(100,Math.round(startAt+(now-startTime)/80));updateUI(false);if(progress&gt;=100){stop();updateUI(true);save();}else frame=requestAnimationFrame(tick);};
       frame=requestAnimationFrame(tick);
     });
-    $(&#x27;#sn2-view&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{q=$(&#x27;#sn2-view&#x27;).value===&#x27;textbook&#x27;?sideView():depthView();schedule();save();});
-    $(&#x27;#sn2-turn&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{q=compose(axisAngle([0,1,0],Math.PI),q);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;schedule();save();});
+    $(&#x27;#sn2-view&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{setRotation($(&#x27;#sn2-view&#x27;).value===&#x27;textbook&#x27;?Math.PI/2:0);schedule();save();});
+    $(&#x27;#sn2-turn&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{setRotation(yaw+Math.PI);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;schedule();save();});
     $(&#x27;#sn2-canopy&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{canopy=$(&#x27;#sn2-canopy&#x27;).checked;schedule();save();});
-    $$(&#x27;[data-rotate]&#x27;).forEach(button=&gt;button.addEventListener(&#x27;click&#x27;,()=&gt;{const d=button.dataset.rotate,axis=d===&#x27;left&#x27;||d===&#x27;right&#x27;?[0,1,0]:[1,0,0],angle=(d===&#x27;left&#x27;||d===&#x27;up&#x27;?-1:1)*Math.PI/12;q=compose(axisAngle(axis,angle),q);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;schedule();save();}));
+    $$(&#x27;[data-rotate]&#x27;).forEach(button=&gt;button.addEventListener(&#x27;click&#x27;,()=&gt;{setRotation(yaw+(button.dataset.rotate===&#x27;left&#x27;?-1:1)*Math.PI/12);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;schedule();save();}));
     for(const svg of [svg3]){
-      svg.addEventListener(&#x27;pointerdown&#x27;,e=&gt;{if(e.button!==0)return;lastDrag={x:e.clientX,y:e.clientY,id:e.pointerId};svg.setPointerCapture(e.pointerId);});
-      svg.addEventListener(&#x27;pointermove&#x27;,e=&gt;{if(!lastDrag||lastDrag.id!==e.pointerId)return;const dx=e.clientX-lastDrag.x,dy=e.clientY-lastDrag.y;lastDrag.x=e.clientX;lastDrag.y=e.clientY;if(dx===0&amp;&amp;dy===0)return;q=compose(compose(axisAngle([0,1,0],dx*.012),axisAngle([1,0,0],dy*.012)),q);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;schedule();});
+      svg.addEventListener(&#x27;pointerdown&#x27;,e=&gt;{if(e.button!==0)return;lastDrag={x:e.clientX,id:e.pointerId};svg.setPointerCapture(e.pointerId);});
+      svg.addEventListener(&#x27;pointermove&#x27;,e=&gt;{if(!lastDrag||lastDrag.id!==e.pointerId)return;const dx=e.clientX-lastDrag.x;lastDrag.x=e.clientX;if(dx===0)return;setRotation(yaw+dx*.012);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;schedule();});
       const finish=e=&gt;{if(lastDrag&amp;&amp;lastDrag.id===e.pointerId){lastDrag=null;save();}};
       svg.addEventListener(&#x27;pointerup&#x27;,finish);svg.addEventListener(&#x27;pointercancel&#x27;,finish);svg.addEventListener(&#x27;lostpointercapture&#x27;,finish);
     }
@@ -2183,42 +2135,15 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;/script&gt;
 &lt;/div&gt;
 
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
 (() =&gt; {
-  let positioningReady = window.FloatingUIDOM
-    ? Promise.resolve(window.FloatingUIDOM)
-    : null;
-  const loadScript = (src) =&gt; new Promise((resolve, reject) =&gt; {
-    const script = document.createElement(&quot;script&quot;);
-    script.src = src;
-    script.onload = resolve;
-    script.onerror = () =&gt; {
-      script.remove();
-      reject(new Error(&quot;Could not load tooltip positioning&quot;));
-    };
-    document.head.appendChild(script);
-  });
-  const loadPositioning = async () =&gt; {
-    const domUrl = &quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;;
-    const preload = document.createElement(&quot;link&quot;);
-    preload.rel = &quot;preload&quot;;
-    preload.as = &quot;script&quot;;
-    preload.href = domUrl;
-    document.head.appendChild(preload);
-    try {
-      if (window.FloatingUICore == null) {
-        await loadScript(&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;);
-      }
-      await loadScript(domUrl);
-      return window.FloatingUIDOM;
-    } finally {
-      preload.remove();
-    }
-  };
-  const getPositioning = () =&gt; positioningReady ??= loadPositioning().catch((error) =&gt; {
-    positioningReady = null;
-    throw error;
-  });
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
   const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
   const tooltipId = `codex-visualization-tooltip-${
     window.crypto?.randomUUID?.() ?? Date.now().toString(36)
@@ -2302,7 +2227,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       skipDelayUntil = Date.now() + skipDelay;
     }
   };
-  const updatePosition = (trigger, floating, { computePosition, flip, offset, shift, size }) =&gt; {
+  const updatePosition = (trigger, floating) =&gt; {
     const request = ++positionRequest;
     void computePosition(trigger, floating, {
       middleware: [
@@ -2357,14 +2282,8 @@ html&gt;body{padding:0}&lt;/style&gt;
     document.body.appendChild(floating);
     activeTrigger = trigger;
     setDescribedBy(trigger, true);
-    const request = positionRequest;
-    void getPositioning().then((positioning) =&gt; {
-      if (request !== positionRequest || !trigger.isConnected) return;
-      autoUpdateCleanup = positioning.autoUpdate(trigger, floating, () =&gt; {
-        updatePosition(trigger, floating, positioning);
-      });
-    }).catch(() =&gt; {
-      if (request === positionRequest) closeTooltip(false);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
     });
   };
   const requestOpen = (trigger, immediate = false) =&gt; {
