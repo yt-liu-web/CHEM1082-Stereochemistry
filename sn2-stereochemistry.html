@@ -2152,11 +2152,12 @@ html&gt;body{padding:0}&lt;/style&gt;
       const w=Math.max(180,svg.getBoundingClientRect().width),cx=w/2;
       svg.setAttribute(&#x27;viewBox&#x27;,&#x27;0 0 &#x27;+w+&#x27; 164&#x27;);
       const label=t===0?&#x27;Before inversion&#x27;:t===1?&#x27;After inversion&#x27;:t===.5?&#x27;Canopy flattened&#x27;:&#x27;Canopy turning inside out&#x27;;
-      svg.setAttribute(&#x27;aria-label&#x27;,label+&#x27;. The shaft, handle, hub, and rib identities stay fixed while the canopy bends through the hub plane.&#x27;);
+      svg.setAttribute(&#x27;aria-label&#x27;,label+&#x27;. The rod and handle stay on the right, with a short tip beyond the hub, while the canopy turns inside out.&#x27;);
       const diagram=el(&#x27;g&#x27;,{transform:&#x27;translate(&#x27;+cx+&#x27; 68) scale(&#x27;+Math.min(1,(w-28)/240)+&#x27;)&#x27;});
       const shaft=el(&#x27;g&#x27;,{&#x27;data-umbrella-part&#x27;:&#x27;fixed-shaft&#x27;});
-      line(shaft,[-106,0],[73,0],{stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:3});
-      shaft.append(el(&#x27;path&#x27;,{d:&#x27;M -106 0 q -14 0 -14 -12 q 0 -10 10 -10&#x27;,fill:&#x27;none&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:3,&#x27;stroke-linecap&#x27;:&#x27;round&#x27;}));
+      // Keep the rod and hooked handle on the right in both poses; leave only a short tip at the hub.
+      line(shaft,[-5,0],[76,0],{stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:3});
+      shaft.append(el(&#x27;path&#x27;,{d:&#x27;M 76 0 q 12 0 12 -12 q 0 -10 -10 -10&#x27;,fill:&#x27;none&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:3,&#x27;stroke-linecap&#x27;:&#x27;round&#x27;}));
       diagram.append(shaft);
       // Preserve every rib&#x27;s transverse position. Only its axial bend passes through zero.
       // The slight oblique projection reveals the rim and the inside surface after inversion.
