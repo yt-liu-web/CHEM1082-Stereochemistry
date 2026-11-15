@@ -2050,6 +2050,9 @@ html&gt;body{padding:0}&lt;/style&gt;
       const view=p=&gt;pivotRotate(model,q,p);
       const rotated=model.atoms.map(a=&gt;Object.assign({},a,{v:view(a.p)}));
       const f=sceneFrame(svg3),nodes=new Map(rotated.map(a=&gt;[a.id,Object.assign(a,{s:screen(a.v,f.cx,f.cy,f.scale)})]));
+      // Only the completed product has a free chloride ion: park it beside the model.
+      // This screen-space offset leaves the camera, model scale, and other stages intact.
+      if(progress===100){const chloride=nodes.get(&#x27;Cl&#x27;);chloride.s=[f.w-36,36,chloride.s[2]];}
       const objects=[];
       if(canopy){
         const corners=model.plane.map(p=&gt;screen(view(p),f.cx,f.cy,f.scale));
