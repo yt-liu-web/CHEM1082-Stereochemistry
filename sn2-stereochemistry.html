@@ -1994,8 +1994,9 @@ html&gt;body{padding:0}&lt;/style&gt;
     function applyViewPreset(){
       const view=$(&#x27;#sn2-view&#x27;).value;
       // Face the inverted product&#x27;s benzene plane toward the screen using the same vertical axis.
-      if(view===&#x27;depth&#x27;)setRotation(progress===100?-2*Math.asin(1/3):0);
-      else if(view===&#x27;textbook&#x27;)setRotation(Math.PI/2);
+      const defaultYaw=progress===100?-2*Math.asin(1/3):0;
+      if(view===&#x27;depth&#x27;)setRotation(defaultYaw);
+      else if(view===&#x27;textbook&#x27;)setRotation(defaultYaw+Math.PI/2);
     }
     const el=(name,attrs={},text)=&gt;{const e=document.createElementNS(NS,name);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));if(text!==undefined)e.textContent=text;return e;};
     const color=kind=&gt;kind===&#x27;iodine&#x27;?&#x27;var(--viz-series-1)&#x27;:kind===&#x27;chlorine&#x27;?&#x27;var(--viz-series-2)&#x27;:&#x27;var(--foreground)&#x27;;
