@@ -1939,7 +1939,6 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;button class=&quot;btn&quot; type=&quot;button&quot; data-stage=&quot;0&quot; aria-pressed=&quot;true&quot;&gt;Reactant&lt;/button&gt;
       &lt;button class=&quot;btn&quot; type=&quot;button&quot; data-stage=&quot;50&quot; aria-pressed=&quot;false&quot;&gt;Transition state&lt;/button&gt;
       &lt;button class=&quot;btn&quot; type=&quot;button&quot; data-stage=&quot;100&quot; aria-pressed=&quot;false&quot;&gt;Product&lt;/button&gt;
-      &lt;button class=&quot;btn btn-primary&quot; type=&quot;button&quot; id=&quot;sn2-play&quot;&gt;Play inversion&lt;/button&gt;
     &lt;/div&gt;
   &lt;/div&gt;
   &lt;div class=&quot;viz-controls&quot;&gt;
@@ -2047,7 +2046,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     const svg3=$(&#x27;#sn2-current&#x27;),referenceSvg=$(&#x27;#sn2-reference&#x27;),beforeSvg=$(&#x27;#sn2-before&#x27;),afterSvg=$(&#x27;#sn2-after&#x27;),range=$(&#x27;#sn2-reaction&#x27;);
     const NS=&#x27;http://www.w3.org/2000/svg&#x27;;
     const VIEW_VERSION=8;
-    let progress=0,yaw=0,q=axisView(0),canopy=true,sideComparison=false,frame=null,playing=false,startTime=0,startAt=0;
+    let progress=0,yaw=0,q=axisView(0),canopy=true,sideComparison=false;
     let requestDraw=null,lastDrag=null;
     function setRotation(angle){yaw=Math.atan2(Math.sin(angle),Math.cos(angle));q=axisView(yaw);}
     function applyViewPreset(){
@@ -2238,19 +2237,10 @@ html&gt;body{padding:0}&lt;/style&gt;
       if(savedView===&#x27;custom&#x27;)setRotation(p.yaw);
       $(&#x27;#sn2-view&#x27;).value=savedView;updateUI(true);
     }
-    function stop(){playing=false;if(frame!==null)cancelAnimationFrame(frame);frame=null;$(&#x27;#sn2-play&#x27;).textContent=&#x27;Play inversion&#x27;;}
-    function setProgress(value){stop();progress=clamp(Math.round(value),0,100);updateUI(true);save();}
-    range.addEventListener(&#x27;input&#x27;,()=&gt;{stop();progress=Number(range.value);updateUI(false);});
+    function setProgress(value){progress=clamp(Math.round(value),0,100);updateUI(true);save();}
+    range.addEventListener(&#x27;input&#x27;,()=&gt;{progress=Number(range.value);updateUI(false);});
     range.addEventListener(&#x27;change&#x27;,()=&gt;{updateUI(true);save();});
     $$(&#x27;[data-stage]&#x27;).forEach(b=&gt;b.addEventListener(&#x27;click&#x27;,()=&gt;setProgress(Number(b.dataset.stage))));
-    $(&#x27;#sn2-play&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{
-      if(playing){stop();updateUI(true);save();return;}
-      if(matchMedia(&#x27;(prefers-reduced-motion: reduce)&#x27;).matches){setProgress(progress===100?0:progress&lt;50?50:100);return;}
-      if(progress===100)progress=0;
-      playing=true;startAt=progress;startTime=performance.now();$(&#x27;#sn2-play&#x27;).textContent=&#x27;Pause&#x27;;
-      const tick=now=&gt;{if(!playing)return;progress=Math.min(100,Math.round(startAt+(now-startTime)/80));updateUI(false);if(progress&gt;=100){stop();updateUI(true);save();}else frame=requestAnimationFrame(tick);};
-      frame=requestAnimationFrame(tick);
-    });
     $(&#x27;#sn2-view&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{sideComparison=$(&#x27;#sn2-view&#x27;).value===&#x27;textbook&#x27;;applyViewPreset();schedule();save();});
     $(&#x27;#sn2-turn&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{setRotation(yaw+Math.PI);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;schedule();save();});
     $(&#x27;#sn2-canopy&#x27;).addEventListener(&#x27;change&#x27;,()=&gt;{canopy=$(&#x27;#sn2-canopy&#x27;).checked;schedule();save();});
@@ -2262,8 +2252,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       svg.addEventListener(&#x27;pointerup&#x27;,finish);svg.addEventListener(&#x27;pointercancel&#x27;,finish);svg.addEventListener(&#x27;lostpointercapture&#x27;,finish);
     }
     new ResizeObserver(()=&gt;{schedule();drawStructures();}).observe(root);
-    document.addEventListener(&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden&amp;&amp;playing){stop();updateUI(true);save();}});
-    window.addEventListener(&#x27;openai:set_globals&#x27;,event=&gt;{const globals=event.detail&amp;&amp;event.detail.globals;if(globals&amp;&amp;globals.widgetState){stop();restore(globals.widgetState);}});
+    window.addEventListener(&#x27;openai:set_globals&#x27;,event=&gt;{const globals=event.detail&amp;&amp;event.detail.globals;if(globals&amp;&amp;globals.widgetState)restore(globals.widgetState);});
     drawStructures();updateUI(true);if(window.openai&amp;&amp;window.openai.widgetState)restore(window.openai.widgetState);
   })();
   &lt;/script&gt;
