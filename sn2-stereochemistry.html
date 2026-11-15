@@ -1905,7 +1905,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     #sn2-umbrella-review .sn2-pane{min-width:0;display:grid;align-content:start;gap:calc(var(--font-size-base)*.25)}
     #sn2-umbrella-review .sn2-models{display:grid;grid-template-columns:minmax(0,1fr);gap:calc(var(--font-size-base)*1);min-width:0}
     #sn2-umbrella-review .sn2-reference[hidden]{display:none}
-    #sn2-umbrella-review .sn2-panes.is-comparing{grid-template-columns:minmax(0,1fr)}
+    #sn2-umbrella-review .sn2-panes.is-comparing,#sn2-umbrella-review .sn2-panes.without-structures{grid-template-columns:minmax(0,1fr)}
     #sn2-umbrella-review .sn2-panes.is-comparing .sn2-models,#sn2-umbrella-review .sn2-panes.is-comparing .sn2-structures{grid-template-columns:repeat(2,minmax(0,1fr))}
     #sn2-umbrella-review .sn2-molecule{width:100%;height:410px;display:block;overflow:hidden;touch-action:none;cursor:grab}
     #sn2-umbrella-review .sn2-molecule:active{cursor:grabbing}
@@ -1914,6 +1914,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     #sn2-umbrella-review .sn2-umbrella[hidden]{display:none}
     #sn2-umbrella-review .sn2-structure{width:100%;height:185px;display:block;overflow:hidden}
     #sn2-umbrella-review .sn2-structures{display:grid;gap:calc(var(--font-size-base)*.75);min-width:0}
+    #sn2-umbrella-review .sn2-structures[hidden],#sn2-umbrella-review .sn2-structures&gt;.sn2-pane[hidden]{display:none}
     #sn2-umbrella-review svg text{font-family:inherit;font-size:var(--font-size-base);font-weight:400;fill:var(--foreground);pointer-events:none}
     #sn2-umbrella-review svg text.sn2-iodine-label{font-family:Georgia,&#x27;Times New Roman&#x27;,serif;font-weight:400;stroke:none}
     #sn2-umbrella-review .sn2-progress{display:grid;gap:calc(var(--font-size-base)*.5)}
@@ -1954,7 +1955,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     &lt;/div&gt;
     &lt;div class=&quot;sn2-structures&quot; aria-label=&quot;Fixed before and after line structures&quot;&gt;
       &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;Before attack&lt;/h3&gt;&lt;svg id=&quot;sn2-before&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;Before attack: benzene on the left and methyl below-right; C–Cl on the upper-left solid wedge and C–H on the upper-right hashed wedge.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
-      &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3&gt;After attack&lt;/h3&gt;&lt;svg id=&quot;sn2-after&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;After attack: benzene on the left and methyl below-right; C–H on the upper-left solid wedge and C–I on the upper-right hashed wedge, showing inversion.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;div class=&quot;sn2-pane&quot; hidden&gt;&lt;h3&gt;After attack&lt;/h3&gt;&lt;svg id=&quot;sn2-after&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;After attack: benzene on the left and methyl below-right; C–H on the upper-left solid wedge and C–I on the upper-right hashed wedge, showing inversion.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
   &lt;div class=&quot;sn2-legend text-small&quot; aria-label=&quot;Bond notation legend&quot;&gt;
@@ -2191,8 +2192,13 @@ html&gt;body{padding:0}&lt;/style&gt;
     function draw(){
       requestDraw=null;
       const comparing=sideComparison&amp;&amp;progress&gt;0;
-      const layoutChanged=$(&#x27;.sn2-panes&#x27;).classList.contains(&#x27;is-comparing&#x27;)!==comparing;
+      const structures=$(&#x27;.sn2-structures&#x27;),afterPane=afterSvg.parentElement;
+      const hideStructures=progress&gt;0&amp;&amp;progress&lt;100,hideAfter=progress!==100;
+      const layoutChanged=$(&#x27;.sn2-panes&#x27;).classList.contains(&#x27;is-comparing&#x27;)!==comparing||structures.hidden!==hideStructures||afterPane.hidden!==hideAfter;
       $(&#x27;.sn2-panes&#x27;).classList.toggle(&#x27;is-comparing&#x27;,comparing);
+      $(&#x27;.sn2-panes&#x27;).classList.toggle(&#x27;without-structures&#x27;,hideStructures);
+      structures.hidden=hideStructures;
+      afterPane.hidden=hideAfter;
       $(&#x27;.sn2-reference&#x27;).hidden=!comparing;
       $(&#x27;#sn2-model-title&#x27;).textContent=comparing?$(&#x27;#sn2-stage&#x27;).textContent:&#x27;3D model&#x27;;
       const currentFrame=sceneFrame(svg3);
