@@ -1909,6 +1909,8 @@ html&gt;body{padding:0}&lt;/style&gt;
     #sn2-umbrella-review .sn2-panes.is-comparing .sn2-models,#sn2-umbrella-review .sn2-panes.is-comparing .sn2-structures{grid-template-columns:repeat(2,minmax(0,1fr))}
     #sn2-umbrella-review .sn2-molecule{width:100%;height:410px;display:block;overflow:hidden;touch-action:none;cursor:grab}
     #sn2-umbrella-review .sn2-molecule:active{cursor:grabbing}
+    #sn2-umbrella-review .sn2-molecule,#sn2-umbrella-review .sn2-molecule *{user-select:none;-webkit-user-select:none}
+    #sn2-umbrella-review .sn2-equivalent[hidden]{display:none}
     #sn2-umbrella-review .sn2-conformation[hidden]{display:none}
     #sn2-umbrella-review .sn2-umbrella{width:100%;height:164px;display:block;overflow:hidden}
     #sn2-umbrella-review .sn2-umbrella[hidden]{display:none}
@@ -1949,7 +1951,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;/div&gt;
   &lt;div class=&quot;viz-controls sn2-conformation&quot;&gt;
     &lt;label class=&quot;form-label&quot; for=&quot;sn2-drag-mode&quot;&gt;Drag to rotate
-      &lt;select class=&quot;form-select&quot; id=&quot;sn2-drag-mode&quot;&gt;&lt;option value=&quot;molecule&quot;&gt;Whole molecule&lt;/option&gt;&lt;option value=&quot;bond&quot;&gt;Phenyl–chiral C bond&lt;/option&gt;&lt;/select&gt;
+      &lt;select class=&quot;form-select&quot; id=&quot;sn2-drag-mode&quot;&gt;&lt;option value=&quot;molecule&quot;&gt;Whole molecule&lt;/option&gt;&lt;option value=&quot;bond&quot;&gt;C(sp²)–C(sp³) σ bond&lt;/option&gt;&lt;/select&gt;
     &lt;/label&gt;
     &lt;button class=&quot;btn&quot; type=&quot;button&quot; id=&quot;sn2-plane-pose&quot;&gt;C–Cl in plane&lt;/button&gt;
     &lt;button class=&quot;btn&quot; type=&quot;button&quot; id=&quot;sn2-initial-conformation&quot;&gt;Initial conformation&lt;/button&gt;
@@ -1957,10 +1959,11 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;div class=&quot;sn2-panes&quot;&gt;
     &lt;div class=&quot;sn2-models&quot;&gt;
       &lt;div class=&quot;sn2-pane sn2-reference&quot; hidden&gt;&lt;h3&gt;Reactant · reference&lt;/h3&gt;&lt;div class=&quot;text-small text-muted&quot;&gt;Drag horizontally · independent rotation&lt;/div&gt;&lt;svg id=&quot;sn2-reference&quot; class=&quot;sn2-molecule&quot; role=&quot;img&quot; aria-label=&quot;Rotatable initial reactant for comparison. Drag horizontally to rotate it independently around its vertical axis.&quot;&gt;&lt;/svg&gt;&lt;svg id=&quot;sn2-reference-umbrella&quot; class=&quot;sn2-umbrella&quot; role=&quot;img&quot; aria-label=&quot;Umbrella before inversion, with its rim to the right of the center.&quot;&gt;&lt;/svg&gt;&lt;details class=&quot;sn2-cam&quot;&gt;&lt;summary class=&quot;text-small&quot;&gt;Reference rotation&lt;/summary&gt;&lt;div class=&quot;sn2-controls&quot;&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-reference-rotate=&quot;left&quot;&gt;Reference left&lt;/button&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-reference-rotate=&quot;right&quot;&gt;Reference right&lt;/button&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; id=&quot;sn2-reference-reset&quot;&gt;Initial reference pose&lt;/button&gt;&lt;/div&gt;&lt;/details&gt;&lt;/div&gt;
-      &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3 id=&quot;sn2-model-title&quot;&gt;3D model&lt;/h3&gt;&lt;div id=&quot;sn2-drag-hint&quot; class=&quot;text-small text-muted&quot;&gt;Drag horizontally · vertical axis in the benzene plane&lt;/div&gt;&lt;svg id=&quot;sn2-current&quot; class=&quot;sn2-molecule&quot; role=&quot;img&quot; aria-label=&quot;3D SN2 model. Drag horizontally to rotate the whole model or, in the reactant, the phenyl–chiral carbon bond. Methyl is shown as one CH3 ball.&quot;&gt;&lt;/svg&gt;&lt;svg id=&quot;sn2-current-umbrella&quot; class=&quot;sn2-umbrella&quot; role=&quot;img&quot; aria-label=&quot;Umbrella before inversion, with its rim to the right of the center.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3 id=&quot;sn2-model-title&quot;&gt;3D model&lt;/h3&gt;&lt;div id=&quot;sn2-drag-hint&quot; class=&quot;text-small text-muted&quot;&gt;Drag the curved arrow left/right to rotate the C(sp²)–C(sp³) σ bond.&lt;/div&gt;&lt;svg id=&quot;sn2-current&quot; class=&quot;sn2-molecule&quot; role=&quot;img&quot; aria-label=&quot;3D SN2 model. Drag the curved arrow left or right to rotate the C(sp²)–C(sp³) sigma bond; drag elsewhere to turn the molecule. Methyl is shown as one CH3 ball.&quot;&gt;&lt;/svg&gt;&lt;svg id=&quot;sn2-current-umbrella&quot; class=&quot;sn2-umbrella&quot; role=&quot;img&quot; aria-label=&quot;Umbrella before inversion, with its rim to the right of the center.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;sn2-structures&quot; aria-label=&quot;Fixed before and after line structures&quot;&gt;
       &lt;div class=&quot;sn2-pane&quot;&gt;&lt;h3 id=&quot;sn2-before-title&quot;&gt;Before attack&lt;/h3&gt;&lt;svg id=&quot;sn2-before&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;Before attack: benzene on the left and methyl below-right; C–Cl on the upper-left solid wedge and C–H on the upper-right hashed wedge.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;div class=&quot;sn2-pane sn2-equivalent&quot;&gt;&lt;h3&gt;Equivalent conformation · C–Cl in plane&lt;/h3&gt;&lt;svg id=&quot;sn2-before-plane&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;Equivalent reactant conformation: Ph and Cl on ordinary in-plane bonds; methyl on the lower-left solid wedge and hydrogen on the lower-right dashed bond.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
       &lt;div class=&quot;sn2-pane&quot; hidden&gt;&lt;h3&gt;After attack&lt;/h3&gt;&lt;svg id=&quot;sn2-after&quot; class=&quot;sn2-structure&quot; role=&quot;img&quot; aria-label=&quot;After attack: benzene on the left and methyl below-right; C–H on the upper-left solid wedge and C–I on the upper-right hashed wedge, showing inversion.&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
@@ -2058,7 +2061,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     }));
     /* GEOMETRY_END */
     const $=s=&gt;root.querySelector(s),$$=s=&gt;Array.from(root.querySelectorAll(s));
-    const svg3=$(&#x27;#sn2-current&#x27;),referenceSvg=$(&#x27;#sn2-reference&#x27;),beforeSvg=$(&#x27;#sn2-before&#x27;),afterSvg=$(&#x27;#sn2-after&#x27;),range=$(&#x27;#sn2-reaction&#x27;);
+    const svg3=$(&#x27;#sn2-current&#x27;),referenceSvg=$(&#x27;#sn2-reference&#x27;),beforeSvg=$(&#x27;#sn2-before&#x27;),planeSvg=$(&#x27;#sn2-before-plane&#x27;),afterSvg=$(&#x27;#sn2-after&#x27;),range=$(&#x27;#sn2-reaction&#x27;);
     const NS=&#x27;http://www.w3.org/2000/svg&#x27;;
     const VIEW_VERSION=9;
     let progress=0,yaw=0,q=axisView(0),canopy=true,sideComparison=false;
@@ -2083,6 +2086,21 @@ html&gt;body{padding:0}&lt;/style&gt;
       svg.setAttribute(&#x27;viewBox&#x27;,&#x27;0 0 &#x27;+w+&#x27; &#x27;+h);
       const scale=Math.min(w-76,h-76)/(2*fitRadius);
       return {w,h,scale,cx:w/2,cy:h/2};
+    }
+    function drawRotationArrow(svg,ring,carbon){
+      // A schematic loop around the projected sigma-bond midpoint is also its drag handle.
+      const dx=carbon[0]-ring[0],dy=carbon[1]-ring[1],length=Math.hypot(dx,dy);
+      const ux=length&gt;1?dx/length:1,uy=length&gt;1?dy/length:0,cx=(ring[0]+carbon[0])/2,cy=(ring[1]+carbon[1])/2;
+      const rx=clamp(length*.15,6,10),ry=19;
+      const point=a=&gt;[cx+ux*rx*Math.cos(a)-uy*ry*Math.sin(a),cy+uy*rx*Math.cos(a)+ux*ry*Math.sin(a)];
+      const points=Array.from({length:41},(_,i)=&gt;point(-.2*Math.PI+i*1.7*Math.PI/40));
+      const path=&#x27;M &#x27;+points.map(p=&gt;p.join(&#x27;,&#x27;)).join(&#x27; L &#x27;),end=points[points.length-1],previous=points[points.length-2];
+      const tx=end[0]-previous[0],ty=end[1]-previous[1],n=Math.hypot(tx,ty),vx=tx/n,vy=ty/n;
+      const g=el(&#x27;g&#x27;,{&#x27;data-rotate-bond&#x27;:&#x27;true&#x27;,&#x27;data-guide&#x27;:&#x27;sigma-rotation&#x27;,&#x27;aria-hidden&#x27;:&#x27;true&#x27;});
+      g.append(el(&#x27;path&#x27;,{d:path,fill:&#x27;none&#x27;,stroke:&#x27;transparent&#x27;,&#x27;stroke-width&#x27;:18,&#x27;pointer-events&#x27;:&#x27;stroke&#x27;}));
+      g.append(el(&#x27;path&#x27;,{d:path,fill:&#x27;none&#x27;,stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:1.8,&#x27;stroke-linecap&#x27;:&#x27;round&#x27;,&#x27;pointer-events&#x27;:&#x27;none&#x27;}));
+      g.append(el(&#x27;polygon&#x27;,{points:[end,[end[0]-vx*7-vy*3.5,end[1]-vy*7+vx*3.5],[end[0]-vx*7+vy*3.5,end[1]-vy*7-vx*3.5]].map(p=&gt;p.join(&#x27;,&#x27;)).join(&#x27; &#x27;),fill:&#x27;var(--foreground)&#x27;,&#x27;pointer-events&#x27;:&#x27;all&#x27;}));
+      svg.append(g);
     }
     function draw3(svg,model,pose,stageProgress,f){
       svg.replaceChildren();
@@ -2123,6 +2141,7 @@ html&gt;body{padding:0}&lt;/style&gt;
         objects.push({z:atom.v[2],node:g});
       }
       objects.sort((a,b)=&gt;a.z-b.z).forEach(o=&gt;svg.append(o.node));
+      if(svg===svg3&amp;&amp;stageProgress===0)drawRotationArrow(svg,nodes.get(&#x27;Ph&#x27;).s,nodes.get(&#x27;C&#x27;).s);
       if(stageProgress===50){const c=nodes.get(&#x27;C&#x27;).s;text(svg,[c[0]+18,c[1]-24],&#x27;‡&#x27;);}
       // Keep the iodine label inside its sphere, clear of bonds crossing its center.
       // Draw the annotation last so foreground geometry cannot obscure the symbol.
@@ -2139,7 +2158,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       const count=Math.max(2,Math.min(8,Math.floor((n-25)/4)));
       for(let i=1;i&lt;=count;i++){const t=i/count,cx=start[0]+(end[0]-start[0])*t,cy=start[1]+(end[1]-start[1])*t,w=half*t;line(parent,[cx-uy*w,cy+ux*w],[cx+uy*w,cy-ux*w],{stroke:c,&#x27;stroke-width&#x27;:1.6});}
     }
-    function drawStructure(svg,product){
+    function drawStructure(svg,product,planeConformer=false){
       svg.replaceChildren();
       const box=svg.getBoundingClientRect(),w=Math.max(180,box.width),h=box.height||185;
       svg.setAttribute(&#x27;viewBox&#x27;,&#x27;0 0 &#x27;+w+&#x27; &#x27;+h);
@@ -2152,10 +2171,9 @@ html&gt;body{padding:0}&lt;/style&gt;
       line(svg,vertices[0],[center[0]-11,center[1]]);
       // A second conventional drawing shows the requested in-plane conformer.
       // Spread the otherwise overlapping H/Me projections without changing configuration.
-      const planeConformer=!product&amp;&amp;progress===0&amp;&amp;Math.abs(torsion-CL_PLANE_TORSION)&lt;1e-6;
-      if(!product){
-        $(&#x27;#sn2-before-title&#x27;).textContent=planeConformer?&#x27;Before attack · C–Cl in plane&#x27;:torsion!==0&amp;&amp;progress===0?&#x27;Before attack · initial conformation&#x27;:&#x27;Before attack&#x27;;
-        svg.setAttribute(&#x27;aria-label&#x27;,planeConformer?&#x27;Before attack: Ph to the left and Cl upper-right on ordinary bonds in the plane; methyl on a lower-left solid wedge and hydrogen on a lower-right dashed bond.&#x27;:&#x27;Before attack, initial conformation: benzene on the left and methyl below-right; C–Cl on the upper-left solid wedge and C–H on the upper-right hashed wedge.&#x27;);
+      if(svg===beforeSvg){
+        $(&#x27;#sn2-before-title&#x27;).textContent=progress===0?&#x27;Before attack · initial conformation&#x27;:&#x27;Before attack&#x27;;
+        svg.setAttribute(&#x27;aria-label&#x27;,&#x27;Before attack, initial conformation: benzene on the left and methyl below-right; C–Cl on the upper-left solid wedge and C–H on the upper-right hashed wedge.&#x27;);
       }
       if(planeConformer){
         const cl=[center[0]+29,center[1]-42],me=[center[0]-22,center[1]+49],hpos=[center[0]+43,center[1]+43];
@@ -2176,7 +2194,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       svg.append(halogenBond,hydrogenBond);
       text(svg,center,&#x27;C&#x27;);text(svg,methyl,&#x27;CH₃&#x27;);text(svg,halogen,product?&#x27;I&#x27;:&#x27;Cl&#x27;,product?{class:&#x27;sn2-iodine-label&#x27;}:{});text(svg,hydrogen,&#x27;H&#x27;);
     }
-    function drawStructures(){drawStructure(beforeSvg,false);drawStructure(afterSvg,true);}
+    function drawStructures(){drawStructure(beforeSvg,false);drawStructure(planeSvg,false,true);drawStructure(afterSvg,true);}
     function drawUmbrella(svg,t){
       svg.replaceChildren();
       const w=Math.max(180,svg.getBoundingClientRect().width),cx=w/2;
@@ -2228,6 +2246,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       $(&#x27;.sn2-panes&#x27;).classList.toggle(&#x27;without-structures&#x27;,hideStructures);
       structures.hidden=hideStructures;
       afterPane.hidden=hideAfter;
+      $(&#x27;.sn2-equivalent&#x27;).hidden=progress!==0;
       $(&#x27;.sn2-reference&#x27;).hidden=!comparing;
       $(&#x27;#sn2-model-title&#x27;).textContent=comparing?$(&#x27;#sn2-stage&#x27;).textContent:&#x27;3D model&#x27;;
       const currentFrame=sceneFrame(svg3);
@@ -2250,7 +2269,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       $$(&#x27;[data-stage]&#x27;).forEach(b=&gt;b.setAttribute(&#x27;aria-pressed&#x27;,String(Number(b.dataset.stage)===progress)));
       $(&#x27;#sn2-canopy&#x27;).checked=canopy;
       $(&#x27;.sn2-conformation&#x27;).hidden=progress!==0;
-      $(&#x27;#sn2-drag-hint&#x27;).textContent=progress===0&amp;&amp;$(&#x27;#sn2-drag-mode&#x27;).value===&#x27;bond&#x27;?&#x27;Drag horizontally · rotate the phenyl–chiral C bond&#x27;:&#x27;Drag horizontally · vertical axis in the benzene plane&#x27;;
+      $(&#x27;#sn2-drag-hint&#x27;).textContent=progress===0?&#x27;Drag the curved arrow left/right to rotate the C(sp²)–C(sp³) σ bond.&#x27;:&#x27;Drag horizontally · vertical axis in the benzene plane&#x27;;
+      svg3.setAttribute(&#x27;aria-label&#x27;,progress===0?$(&#x27;#sn2-drag-mode&#x27;).value===&#x27;bond&#x27;?&#x27;3D reactant. Drag the curved arrow or anywhere in this model left or right to rotate the C(sp²)–C(sp³) sigma bond.&#x27;:&#x27;3D reactant. Drag the curved arrow left or right to rotate the C(sp²)–C(sp³) sigma bond; drag elsewhere to turn the molecule.&#x27;:&#x27;3D SN2 model. Drag horizontally to turn the molecule about its vertical axis.&#x27;);
       if(announce){$(&#x27;#sn2-detail&#x27;).textContent=progress===0?&#x27;Reactant · I⁻ approaches opposite the C–Cl bond.&#x27;:progress===50?&#x27;Transition state ‡ · H, CH₃, and Ph are coplanar with C.&#x27;:progress===100?&#x27;Product · configuration inverted; rotating this view preserves it.&#x27;:&#x27;Umbrella inversion · H, CH₃, and Ph move through the plane.&#x27;;}
       schedule();
     }
@@ -2276,8 +2296,9 @@ html&gt;body{padding:0}&lt;/style&gt;
     function setProgress(value){changeStage(value);updateUI(true);save();}
     function rotateMain(delta){
       if(progress===0&amp;&amp;$(&#x27;#sn2-drag-mode&#x27;).value===&#x27;bond&#x27;){
-        torsion=Math.atan2(Math.sin(torsion+delta),Math.cos(torsion+delta));drawStructures();
-        $(&#x27;#sn2-detail&#x27;).textContent=Math.abs(torsion-CL_PLANE_TORSION)&lt;1e-6?&#x27;C–Cl lies in the benzene plane · I⁻ remains directly opposite Cl.&#x27;:&#x27;Bond rotated · I⁻ remains directly opposite Cl.&#x27;;
+        torsion=Math.atan2(Math.sin(torsion+delta),Math.cos(torsion+delta));
+        const detail=Math.abs(torsion-CL_PLANE_TORSION)&lt;1e-6?&#x27;C–Cl lies in the benzene plane · I⁻ remains directly opposite Cl.&#x27;:&#x27;Bond rotated · I⁻ remains directly opposite Cl.&#x27;;
+        if($(&#x27;#sn2-detail&#x27;).textContent!==detail)$(&#x27;#sn2-detail&#x27;).textContent=detail;
       }else{setRotation(yaw+delta);$(&#x27;#sn2-view&#x27;).value=&#x27;custom&#x27;;}
       schedule();
     }
@@ -2296,8 +2317,19 @@ html&gt;body{padding:0}&lt;/style&gt;
     $$(&#x27;[data-reference-rotate]&#x27;).forEach(button=&gt;button.addEventListener(&#x27;click&#x27;,()=&gt;{referenceYaw+=(button.dataset.referenceRotate===&#x27;left&#x27;?-1:1)*Math.PI/12;schedule();save();}));
     $(&#x27;#sn2-reference-reset&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;{referenceYaw=sideYaw(0);schedule();save();});
     for(const svg of [svg3,referenceSvg]){
-      svg.addEventListener(&#x27;pointerdown&#x27;,e=&gt;{if(e.button!==0)return;lastDrag={x:e.clientX,id:e.pointerId,svg};svg.setPointerCapture(e.pointerId);});
-      svg.addEventListener(&#x27;pointermove&#x27;,e=&gt;{if(!lastDrag||lastDrag.id!==e.pointerId||lastDrag.svg!==svg)return;const dx=e.clientX-lastDrag.x;lastDrag.x=e.clientX;if(dx===0)return;if(svg===referenceSvg){referenceYaw+=dx*.012;schedule();}else rotateMain(dx*.012);});
+      svg.addEventListener(&#x27;pointerdown&#x27;,e=&gt;{
+        if(e.button!==0)return;
+        e.preventDefault();
+        if(svg===svg3&amp;&amp;progress===0&amp;&amp;e.target?.closest(&#x27;[data-rotate-bond]&#x27;)){$(&#x27;#sn2-drag-mode&#x27;).value=&#x27;bond&#x27;;updateUI(false);}
+        lastDrag={x:e.clientX,id:e.pointerId,svg};svg.setPointerCapture(e.pointerId);
+      });
+      svg.addEventListener(&#x27;pointermove&#x27;,e=&gt;{
+        if(!lastDrag||lastDrag.id!==e.pointerId||lastDrag.svg!==svg)return;
+        e.preventDefault();
+        const dx=e.clientX-lastDrag.x;lastDrag.x=e.clientX;if(dx===0)return;
+        if(svg===referenceSvg){referenceYaw+=dx*.012;schedule();}
+        else rotateMain(dx*(progress===0&amp;&amp;$(&#x27;#sn2-drag-mode&#x27;).value===&#x27;bond&#x27;?.008:.012));
+      });
       const finish=e=&gt;{if(lastDrag&amp;&amp;lastDrag.id===e.pointerId){lastDrag=null;save();}};
       svg.addEventListener(&#x27;pointerup&#x27;,finish);svg.addEventListener(&#x27;pointercancel&#x27;,finish);svg.addEventListener(&#x27;lostpointercapture&#x27;,finish);
     }
